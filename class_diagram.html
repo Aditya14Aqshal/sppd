@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Class Diagram — SPPD Bakesbangpol</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --purple: #a78bfa;
+    --teal: #2dd4bf;
+    --blue: #3b82f6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; }
+  h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+  .section { max-width: 1600px; margin: 0 auto 40px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .section-header h2 { font-size: 17px; font-weight: 600; }
+  .badge { font-size: 11px; padding: 3px 12px; border-radius: 20px; font-weight: 500; color: #fff; }
+  .badge-blue { background: var(--blue); }
+  .badge-green { background: var(--green); }
+  .badge-purple { background: #8b5cf6; }
+  .badge-amber { background: var(--amber); }
+  .badge-teal { background: #14b8a6; }
+  .badge-red { background: var(--red); }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; overflow-x: auto; }
+  .card .mermaid { min-height: 200px; }
+  .toc { max-width: 1600px; margin: 0 auto 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px 28px; }
+  .toc h3 { font-size: 14px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 14px; padding: 6px 10px; border-radius: 6px; transition: background .15s; display: block; }
+  .toc a:hover { background: rgba(56,189,248,.1); }
+  .toc a span { color: var(--muted); font-size: 12px; }
+  .legend { max-width: 1600px; margin: 0 auto 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .legend-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .legend-box { width: 20px; height: 16px; border-radius: 3px; border: 2px solid; }
+  .table-list { max-width: 1600px; margin: 0 auto 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px 28px; }
+  .table-list h3 { font-size: 14px; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .table-card { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .table-card-header { padding: 10px 14px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .table-card-header .icon { width: 8px; height: 8px; border-radius: 50%; }
+  .table-card-body { padding: 0 14px 12px; }
+  .table-card-body .col { font-size: 12px; padding: 3px 0; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(51,65,85,.4); }
+  .table-card-body .col:last-child { border-bottom: none; }
+  .table-card-body .col-name { color: var(--text); font-family: 'Consolas', 'Monaco', monospace; }
+  .table-card-body .col-type { color: var(--muted); font-family: 'Consolas', 'Monaco', monospace; font-size: 11px; }
+  .table-card-body .col-pk { color: var(--amber); }
+  .table-card-body .col-fk { color: var(--accent); }
+  .fk-line { color: var(--accent); font-size: 11px; margin-top: 4px; font-style: italic; }
+  @media print {
+    body { background: #fff; color: #000; }
+    .card, .toc, .legend, .table-list { background: #fff; border-color: #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Class Diagram — Sistem SPPD Bakesbangpol</h1>
+<p class="subtitle">Badan Kesatuan Bangsa dan Politik — Kota Kuala Kapuas &bull; Diagram Kelas UML dari Database Schema</p>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h3>Daftar Diagram</h3>
+  <div class="toc-grid">
+    <a href="#erd-overview">1. Overview — Semua Tabel & Relasi <span>&mdash; 12 tabel, full ERD</span></a>
+    <a href="#erd-core">2. Core Tables — SPPD & Relasi <span>&mdash; tb_sppd sebagai pusat</span></a>
+    <a href="#erd-master">3. Master Data Tables <span>&mdash; Jabatan, Pegawai, Pengguna, dll</span></a>
+    <a href="#erd-finance">4. Finance Tables <span>&mdash; Anggaran, Komponen Biaya, Biaya Perjalanan</span></a>
+    <a href="#erd-report">5. Report & Reference <span>&mdash; Laporan Dinas, Dasar Hukum, Unit Kerja</span></a>
+    <a href="#table-details">6. Detail Semua Tabel <span>&mdash; Kolom, Tipe, PK/FK</span></a>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span class="legend-title">Legenda:</span>
+  <div class="legend-item"><div class="legend-box" style="border-color:var(--amber);background:rgba(245,158,11,.15)"></div> Primary Key (PK)</div>
+  <div class="legend-item"><div class="legend-box" style="border-color:var(--accent);background:rgba(56,189,248,.15)"></div> Foreign Key (FK)</div>
+  <div class="legend-item"><div class="legend-box" style="border-color:var(--green);background:rgba(34,197,94,.15)"></div> Column (biasa)</div>
+  <div class="legend-item"><div class="legend-box" style="border-color:var(--red);background:rgba(239,68,68,.15)"></div> ENUM type</div>
+  <div class="legend-item" style="color:var(--muted)">|1..1| = one-to-one &bull; |1..*| = one-to-many &bull; |0..1| = optional</div>
+</div>
+
+<!-- ==================== DIAGRAM 1: FULL ERD ==================== -->
+<div class="section" id="erd-overview">
+  <div class="section-header">
+    <h2>1. Overview — Semua Tabel & Relasi</h2>
+    <span class="badge badge-blue">12 tabel — classDiagram syntax</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+classDiagram
+    class tb_jabatan {
+        +INT id_jabatan PK
+        +VARCHAR nama_jabatan
+        +VARCHAR golongan
+        +VARCHAR pangkat
+    }
+
+    class tb_pegawai {
+        +INT id_pegawai PK
+        +VARCHAR nip UNIQUE
+        +VARCHAR nama_lengkap
+        +INT id_jabatan FK
+        +VARCHAR unit_kerja
+        +ENUM status
+    }
+
+    class tb_pengguna {
+        +INT id_pengguna PK
+        +INT id_pegawai FK UNIQUE
+        +VARCHAR username UNIQUE
+        +VARCHAR password
+        +ENUM role
+        +ENUM status
+    }
+
+    class tb_tujuan {
+        +INT id_tujuan PK
+        +VARCHAR nama_instansi
+        +VARCHAR kota
+        +VARCHAR provinsi
+        +ENUM zona
+    }
+
+    class tb_jenis_kegiatan {
+        +INT id_kegiatan PK
+        +VARCHAR nama_kegiatan
+        +ENUM status
+    }
+
+    class tb_anggaran {
+        +INT id_anggaran PK
+        +VARCHAR kode_anggaran UNIQUE
+        +VARCHAR nama_program
+        +DECIMAL pagu
+        +ENUM status
+    }
+
+    class tb_sppd {
+        +INT id_sppd PK
+        +INT id_pengaju FK
+        +INT id_kegiatan FK
+        +INT id_tujuan FK
+        +INT id_anggaran FK
+        +INT id_pimpinan FK NULL
+        +VARCHAR no_sppd NULL
+        +TEXT keperluan
+        +DATE tgl_berangkat
+        +DATE tgl_kembali
+        +VARCHAR kendaraan
+        +ENUM status
+        +TEXT catatan_tolak
+        +DATETIME tgl_pengajuan
+        +DATETIME tgl_persetujuan
+    }
+
+    class tb_sppd_anggota {
+        +INT id_anggota PK
+        +INT id_sppd FK
+        +INT id_pegawai FK
+        +VARCHAR peran
+    }
+
+    class tb_komponen_biaya {
+        +INT id_komponen PK
+        +ENUM jenis_biaya
+        +VARCHAR golongan
+        +ENUM zona
+        +DECIMAL besaran
+    }
+
+    class tb_biaya_perjalanan {
+        +INT id_biaya PK
+        +INT id_sppd FK
+        +INT id_komponen FK
+        +INT jumlah_hari
+        +DECIMAL besaran_realisasi
+        +VARCHAR kwitansi_file NULL
+    }
+
+    class tb_laporan_dinas {
+        +INT id_laporan PK
+        +INT id_sppd FK UNIQUE
+        +DATE tgl_aktual_berangkat
+        +DATE tgl_aktual_kembali
+        +TEXT uraian_kegiatan
+        +TEXT kesimpulan
+        +VARCHAR bukti_file NULL
+    }
+
+    class tb_unit_kerja {
+        +INT id_unit PK
+        +VARCHAR nama_unit
+        +VARCHAR kode_unit NULL
+    }
+
+    class tb_dasar_hukum {
+        +INT id_dasar PK
+        +VARCHAR judul
+        +TEXT isi
+        +YEAR tahun
+        +ENUM status
+        +INT urutan
+    }
+
+    tb_jabatan "1" --> "1..*" tb_pegawai : id_jabatan
+    tb_pegawai "1" --> "0..1" tb_pengguna : id_pegawai
+    tb_pegawai "1" --> "0..*" tb_sppd : id_pengaju
+    tb_pegawai "1" --> "0..*" tb_sppd : id_pimpinan
+    tb_pegawai "1" --> "0..*" tb_sppd_anggota : id_pegawai
+    tb_jenis_kegiatan "1" --> "0..*" tb_sppd : id_kegiatan
+    tb_tujuan "1" --> "0..*" tb_sppd : id_tujuan
+    tb_anggaran "1" --> "0..*" tb_sppd : id_anggaran
+    tb_sppd "1" --> "0..*" tb_sppd_anggota : id_sppd
+    tb_sppd "1" --> "0..1" tb_laporan_dinas : id_sppd
+    tb_sppd "1" --> "0..*" tb_biaya_perjalanan : id_sppd
+    tb_komponen_biaya "1" --> "0..*" tb_biaya_perjalanan : id_komponen
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 2: CORE SPPD ==================== -->
+<div class="section" id="erd-core">
+  <div class="section-header">
+    <h2>2. Core Tables — SPPD & Relasi Langsung</h2>
+    <span class="badge badge-green">Pusat: tb_sppd — 5 FK relationships</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+classDiagram
+    class tb_sppd {
+        +INT id_sppd PK
+        +INT id_pengaju FK → tb_pegawai
+        +INT id_kegiatan FK → tb_jenis_kegiatan
+        +INT id_tujuan FK → tb_tujuan
+        +INT id_anggaran FK → tb_anggaran
+        +INT id_pimpinan FK → tb_pegawai
+        +VARCHAR no_sppd
+        +TEXT keperluan
+        +DATE tgl_berangkat
+        +DATE tgl_kembali
+        +VARCHAR kendaraan
+        +ENUM status «draf|diajukan|diverifikasi|disetujui|ditolak|selesai»
+        +TEXT catatan_tolak
+        +DATETIME tgl_pengajuan
+        +DATETIME tgl_persetujuan
+    }
+
+    class tb_pegawai {
+        +INT id_pegawai PK
+        +VARCHAR nip
+        +VARCHAR nama_lengkap
+        +INT id_jabatan FK
+        +VARCHAR unit_kerja
+        +ENUM status «aktif|nonaktif»
+    }
+
+    class tb_jenis_kegiatan {
+        +INT id_kegiatan PK
+        +VARCHAR nama_kegiatan
+        +ENUM status «aktif|nonaktif»
+    }
+
+    class tb_tujuan {
+        +INT id_tujuan PK
+        +VARCHAR nama_instansi
+        +VARCHAR kota
+        +VARCHAR provinsi
+        +ENUM zona «lokal|luar_kota|luar_provinsi»
+    }
+
+    class tb_anggaran {
+        +INT id_anggaran PK
+        +VARCHAR kode_anggaran
+        +VARCHAR nama_program
+        +DECIMAL pagu
+        +ENUM status «aktif|nonaktif»
+    }
+
+    class tb_sppd_anggota {
+        +INT id_anggota PK
+        +INT id_sppd FK
+        +INT id_pegawai FK
+        +VARCHAR peran
+    }
+
+    class tb_biaya_perjalanan {
+        +INT id_biaya PK
+        +INT id_sppd FK
+        +INT id_komponen FK
+        +INT jumlah_hari
+        +DECIMAL besaran_realisasi
+        +VARCHAR kwitansi_file
+    }
+
+    class tb_laporan_dinas {
+        +INT id_laporan PK
+        +INT id_sppd FK UNIQUE
+        +DATE tgl_aktual_berangkat
+        +DATE tgl_aktual_kembali
+        +TEXT uraian_kegiatan
+        +TEXT kesimpulan
+        +VARCHAR bukti_file
+    }
+
+    tb_sppd }o--|| tb_pegawai : "pengaju"
+    tb_sppd }o--|| tb_pegawai : "pimpinan"
+    tb_sppd }o--|| tb_jenis_kegiatan
+    tb_sppd }o--|| tb_tujuan
+    tb_sppd }o--|| tb_anggaran
+    tb_sppd ||--o{ tb_sppd_anggota
+    tb_sppd ||--o| tb_laporan_dinas
+    tb_sppd ||--o{ tb_biaya_perjalanan
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 3: MASTER DATA ==================== -->
+<div class="section" id="erd-master">
+  <div class="section-header">
+    <h2>3. Master Data Tables</h2>
+    <span class="badge badge-purple">tb_jabatan, tb_pegawai, tb_pengguna, tb_unit_kerja</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+classDiagram
+    class tb_jabatan {
+        +INT id_jabatan PK
+        +VARCHAR nama_jabatan «100»
+        +VARCHAR golongan «10»
+        +VARCHAR pangkat «50»
+        ---
+        +Array pegawaiList
+    }
+
+    class tb_pegawai {
+        +INT id_pegawai PK
+        +VARCHAR nip «30» UNIQUE
+        +VARCHAR nama_lengkap «100»
+        +INT id_jabatan FK
+        +VARCHAR unit_kerja «100»
+        +ENUM status «aktif|nonaktif»
+        ---
+        +Jabatan jabatan
+        +Pengguna pengguna
+        +Array sppdList
+    }
+
+    class tb_pengguna {
+        +INT id_pengguna PK
+        +INT id_pegawai FK UNIQUE
+        +VARCHAR username «50» UNIQUE
+        +VARCHAR password «255»
+        +ENUM role «admin|pegawai|pimpinan»
+        +ENUM status «aktif|nonaktif»
+        ---
+        +Pegawai pegawai
+        +login()
+        +logout()
+    }
+
+    class tb_unit_kerja {
+        +INT id_unit PK
+        +VARCHAR nama_unit «100»
+        +VARCHAR kode_unit «20»
+        ---
+        +Array pegawaiList
+    }
+
+    tb_jabatan "1" --> "0..*" tb_pegawai
+    tb_pegawai "1" --> "0..1" tb_pengguna
+    tb_unit_kerja "1" ..> "0..*" tb_pegawai : "unit_kerja (string)"
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 4: FINANCE ==================== -->
+<div class="section" id="erd-finance">
+  <div class="section-header">
+    <h2>4. Finance Tables</h2>
+    <span class="badge badge-amber">tb_anggaran, tb_komponen_biaya, tb_biaya_perjalanan</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+classDiagram
+    class tb_anggaran {
+        +INT id_anggaran PK
+        +VARCHAR kode_anggaran «50» UNIQUE
+        +VARCHAR nama_program «150»
+        +DECIMAL pagu «15,0»
+        +ENUM status «aktif|nonaktif»
+        ---
+        +Array sppdList
+        +getRealisasi() DECIMAL
+        +getSisa() DECIMAL
+        +getPersentase() Float
+    }
+
+    class tb_komponen_biaya {
+        +INT id_komponen PK
+        +ENUM jenis_biaya «uang_harian|transport|penginapan»
+        +VARCHAR golongan «5»
+        +ENUM zona «lokal|luar_kota|luar_provinsi»
+        +DECIMAL besaran «12,0»
+        ---
+        +Array biayaList
+    }
+
+    class tb_biaya_perjalanan {
+        +INT id_biaya PK
+        +INT id_sppd FK
+        +INT id_komponen FK
+        +INT jumlah_hari
+        +DECIMAL besaran_realisasi «12,0»
+        +VARCHAR kwitansi_file «255»
+        ---
+        +SPPD sppd
+        +KomponenBiaya komponen
+        +getTotal() DECIMAL
+    }
+
+    class tb_sppd {
+        +INT id_sppd PK
+        +INT id_anggaran FK
+        ---
+        +Anggaran anggaran
+        +Array biayaList
+        +getTotalBiaya() DECIMAL
+    }
+
+    class tb_sppd {
+        <<external>>
+        +INT id_sppd
+    }
+
+    tb_anggaran "1" --> "0..*" tb_sppd : "1 SPPD → 1 Anggaran"
+    tb_sppd "1" --> "0..*" tb_biaya_perjalanan
+    tb_komponen_biaya "1" --> "0..*" tb_biaya_perjalanan
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 5: REPORT & REFERENCE ==================== -->
+<div class="section" id="erd-report">
+  <div class="section-header">
+    <h2>5. Report & Reference Tables</h2>
+    <span class="badge badge-teal">tb_laporan_dinas, tb_dasar_hukum, tb_jenis_kegiatan</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+classDiagram
+    class tb_laporan_dinas {
+        +INT id_laporan PK
+        +INT id_sppd FK UNIQUE
+        +DATE tgl_aktual_berangkat
+        +DATE tgl_aktual_kembali
+        +TEXT uraian_kegiatan
+        +TEXT kesimpulan
+        +VARCHAR bukti_file «255»
+        ---
+        +SPPD sppd
+        +uploadBukti() Boolean
+        +save() Boolean
+    }
+
+    class tb_dasar_hukum {
+        +INT id_dasar PK
+        +VARCHAR judul «200»
+        +TEXT isi
+        +YEAR tahun
+        +ENUM status «aktif|nonaktif»
+        +INT urutan
+        ---
+        +Array sppdList
+    }
+
+    class tb_jenis_kegiatan {
+        +INT id_kegiatan PK
+        +VARCHAR nama_kegiatan «150»
+        +ENUM status «aktif|nonaktif»
+        ---
+        +Array sppdList
+        +isUsedInSPPD() Boolean
+    }
+
+    class tb_sppd {
+        <<external>>
+        +INT id_sppd
+        +INT id_kegiatan FK
+    }
+
+    class tb_tujuan {
+        +INT id_tujuan PK
+        +VARCHAR nama_instansi «150»
+        +VARCHAR kota «100»
+        +VARCHAR provinsi «100»
+        +ENUM zona «lokal|luar_kota|luar_provinsi»
+        ---
+        +Array sppdList
+    }
+
+    tb_sppd "1" --> "0..1" tb_laporan_dinas : "1:1 (UNIQUE FK)"
+    tb_jenis_kegiatan "1" --> "0..*" tb_sppd
+    tb_tujuan "1" --> "0..*" tb_sppd
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TABLE DETAILS ==================== -->
+<div class="section" id="table-details">
+  <div class="section-header">
+    <h2>6. Detail Semua Tabel — Kolom & Tipe Data</h2>
+    <span class="badge badge-red">12 tabel — PK (kuning), FK (biru), Column (hijau)</span>
+  </div>
+
+  <div class="table-list">
+    <div class="table-grid">
+
+      <!-- tb_jabatan -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(139,92,246,.15);color:var(--purple)">
+          <div class="icon" style="background:var(--purple)"></div>tb_jabatan
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_jabatan</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">nama_jabatan</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
+          <div class="col"><span class="col-name">golongan</span><span class="col-type">VARCHAR(10)</span></div>
+          <div class="col"><span class="col-name">pangkat</span><span class="col-type">VARCHAR(50)</span></div>
+        </div>
+      </div>
+
+      <!-- tb_pegawai -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(59,130,246,.15);color:var(--blue)">
+          <div class="icon" style="background:var(--blue)"></div>tb_pegawai
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_pegawai</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">nip</span><span class="col-type">VARCHAR(30) UNIQUE NOT NULL</span></div>
+          <div class="col"><span class="col-name">nama_lengkap</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_jabatan</span><span class="col-type">INT NOT NULL FK→tb_jabatan</span></div>
+          <div class="col"><span class="col-name">unit_kerja</span><span class="col-type">VARCHAR(100)</span></div>
+          <div class="col"><span class="col-name">status</span><span class="col-type">ENUM('aktif','nonaktif')</span></div>
+        </div>
+      </div>
+
+      <!-- tb_pengguna -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(34,197,94,.15);color:var(--green)">
+          <div class="icon" style="background:var(--green)"></div>tb_pengguna
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_pengguna</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_pegawai</span><span class="col-type">INT UNIQUE NOT NULL FK→tb_pegawai</span></div>
+          <div class="col"><span class="col-name">username</span><span class="col-type">VARCHAR(50) UNIQUE NOT NULL</span></div>
+          <div class="col"><span class="col-name">password</span><span class="col-type">VARCHAR(255) NOT NULL</span></div>
+          <div class="col"><span class="col-name">role</span><span class="col-type">ENUM('admin','pegawai','pimpinan')</span></div>
+          <div class="col"><span class="col-name">status</span><span class="col-type">ENUM('aktif','nonaktif')</span></div>
+        </div>
+      </div>
+
+      <!-- tb_tujuan -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(245,158,11,.15);color:var(--amber)">
+          <div class="icon" style="background:var(--amber)"></div>tb_tujuan
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_tujuan</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">nama_instansi</span><span class="col-type">VARCHAR(150) NOT NULL</span></div>
+          <div class="col"><span class="col-name">kota</span><span class="col-type">VARCHAR(100)</span></div>
+          <div class="col"><span class="col-name">provinsi</span><span class="col-type">VARCHAR(100)</span></div>
+          <div class="col"><span class="col-name">zona</span><span class="col-type">ENUM('lokal','luar_kota','luar_provinsi')</span></div>
+        </div>
+      </div>
+
+      <!-- tb_jenis_kegiatan -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(20,184,166,.15);color:var(--teal)">
+          <div class="icon" style="background:var(--teal)"></div>tb_jenis_kegiatan
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_kegiatan</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">nama_kegiatan</span><span class="col-type">VARCHAR(150) NOT NULL</span></div>
+          <div class="col"><span class="col-name">status</span><span class="col-type">ENUM('aktif','nonaktif')</span></div>
+        </div>
+      </div>
+
+      <!-- tb_anggaran -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(168,85,247,.15);color:#a855f7">
+          <div class="icon" style="background:#a855f7"></div>tb_anggaran
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_anggaran</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">kode_anggaran</span><span class="col-type">VARCHAR(50) UNIQUE NOT NULL</span></div>
+          <div class="col"><span class="col-name">nama_program</span><span class="col-type">VARCHAR(150) NOT NULL</span></div>
+          <div class="col"><span class="col-name">pagu</span><span class="col-type">DECIMAL(15,0) DEFAULT 0</span></div>
+          <div class="col"><span class="col-name">status</span><span class="col-type">ENUM('aktif','nonaktif')</span></div>
+        </div>
+      </div>
+
+      <!-- tb_sppd -->
+      <div class="table-card" style="grid-column: span 2;">
+        <div class="table-card-header" style="background:rgba(56,189,248,.15);color:var(--accent)">
+          <div class="icon" style="background:var(--accent)"></div>tb_sppd <span style="font-size:11px;color:var(--muted);margin-left:auto;">— Tabel Utama (5 FK)</span>
+        </div>
+        <div class="table-card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px;">
+            <div>
+              <div class="col"><span class="col-name col-pk">🔑 id_sppd</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+              <div class="col"><span class="col-name col-fk">🔗 id_pengaju</span><span class="col-type">INT NOT NULL FK→tb_pegawai</span></div>
+              <div class="col"><span class="col-name col-fk">🔗 id_kegiatan</span><span class="col-type">INT NOT NULL FK→tb_jenis_kegiatan</span></div>
+              <div class="col"><span class="col-name col-fk">🔗 id_tujuan</span><span class="col-type">INT NOT NULL FK→tb_tujuan</span></div>
+              <div class="col"><span class="col-name col-fk">🔗 id_anggaran</span><span class="col-type">INT NOT NULL FK→tb_anggaran</span></div>
+              <div class="col"><span class="col-name col-fk">🔗 id_pimpinan</span><span class="col-type">INT NULL FK→tb_pegawai</span></div>
+            </div>
+            <div>
+              <div class="col"><span class="col-name">no_sppd</span><span class="col-type">VARCHAR(50) NULL</span></div>
+              <div class="col"><span class="col-name">keperluan</span><span class="col-type">TEXT NOT NULL</span></div>
+              <div class="col"><span class="col-name">tgl_berangkat</span><span class="col-type">DATE NOT NULL</span></div>
+              <div class="col"><span class="col-name">tgl_kembali</span><span class="col-type">DATE NOT NULL</span></div>
+              <div class="col"><span class="col-name">kendaraan</span><span class="col-type">VARCHAR(50) NULL</span></div>
+              <div class="col"><span class="col-name">status</span><span class="col-type">ENUM('draf','diajukan',...)</span></div>
+              <div class="col"><span class="col-name">catatan_tolak</span><span class="col-type">TEXT NULL</span></div>
+              <div class="col"><span class="col-name">tgl_pengajuan</span><span class="col-type">DATETIME DEFAULT NOW()</span></div>
+              <div class="col"><span class="col-name">tgl_persetujuan</span><span class="col-type">DATETIME NULL</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- tb_sppd_anggota -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(239,68,68,.15);color:var(--red)">
+          <div class="icon" style="background:var(--red)"></div>tb_sppd_anggota
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_anggota</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_sppd</span><span class="col-type">INT NOT NULL FK→tb_sppd ON DELETE CASCADE</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_pegawai</span><span class="col-type">INT NOT NULL FK→tb_pegawai</span></div>
+          <div class="col"><span class="col-name">peran</span><span class="col-type">VARCHAR(50) NULL</span></div>
+        </div>
+      </div>
+
+      <!-- tb_komponen_biaya -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(139,92,246,.15);color:var(--purple)">
+          <div class="icon" style="background:var(--purple)"></div>tb_komponen_biaya
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_komponen</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">jenis_biaya</span><span class="col-type">ENUM('uang_harian','transport','penginapan')</span></div>
+          <div class="col"><span class="col-name">golongan</span><span class="col-type">VARCHAR(5) NOT NULL</span></div>
+          <div class="col"><span class="col-name">zona</span><span class="col-type">ENUM('lokal','luar_kota','luar_provinsi')</span></div>
+          <div class="col"><span class="col-name">besaran</span><span class="col-type">DECIMAL(12,0) DEFAULT 0</span></div>
+        </div>
+      </div>
+
+      <!-- tb_biaya_perjalanan -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(56,189,248,.15);color:var(--accent)">
+          <div class="icon" style="background:var(--accent)"></div>tb_biaya_perjalanan
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_biaya</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_sppd</span><span class="col-type">INT NOT NULL FK→tb_sppd ON DELETE CASCADE</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_komponen</span><span class="col-type">INT NOT NULL FK→tb_komponen_biaya</span></div>
+          <div class="col"><span class="col-name">jumlah_hari</span><span class="col-type">INT DEFAULT 1</span></div>
+          <div class="col"><span class="col-name">besaran_realisasi</span><span class="col-type">DECIMAL(12,0) DEFAULT 0</span></div>
+          <div class="col"><span class="col-name">kwitansi_file</span><span class="col-type">VARCHAR(255) NULL</span></div>
+        </div>
+      </div>
+
+      <!-- tb_laporan_dinas -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(34,197,94,.15);color:var(--green)">
+          <div class="icon" style="background:var(--green)"></div>tb_laporan_dinas
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_laporan</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name col-fk">🔗 id_sppd</span><span class="col-type">INT UNIQUE NOT NULL FK→tb_sppd ON DELETE CASCADE</span></div>
+          <div class="col"><span class="col-name">tgl_aktual_berangkat</span><span class="col-type">DATE NULL</span></div>
+          <div class="col"><span class="col-name">tgl_aktual_kembali</span><span class="col-type">DATE NULL</span></div>
+          <div class="col"><span class="col-name">uraian_kegiatan</span><span class="col-type">TEXT NULL</span></div>
+          <div class="col"><span class="col-name">kesimpulan</span><span class="col-type">TEXT NULL</span></div>
+          <div class="col"><span class="col-name">bukti_file</span><span class="col-type">VARCHAR(255) NULL</span></div>
+        </div>
+      </div>
+
+      <!-- tb_unit_kerja -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(20,184,166,.15);color:var(--teal)">
+          <div class="icon" style="background:var(--teal)"></div>tb_unit_kerja
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_unit</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">nama_unit</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
+          <div class="col"><span class="col-name">kode_unit</span><span class="col-type">VARCHAR(20) NULL</span></div>
+        </div>
+      </div>
+
+      <!-- tb_dasar_hukum -->
+      <div class="table-card">
+        <div class="table-card-header" style="background:rgba(245,158,11,.15);color:var(--amber)">
+          <div class="icon" style="background:var(--amber)"></div>tb_dasar_hukum
+        </div>
+        <div class="table-card-body">
+          <div class="col"><span class="col-name col-pk">🔑 id_dasar</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+          <div class="col"><span class="col-name">judul</span><span class="col-type">VARCHAR(200) NOT NULL</span></div>
+          <div class="col"><span class="col-name">isi</span><span class="col-type">TEXT NOT NULL</span></div>
+          <div class="col"><span class="col-name">tahun</span><span class="col-type">YEAR NULL</span></div>
+          <div class="col"><span class="col-name">status</span><span class="col-type">ENUM('aktif','nonaktif')</span></div>
+          <div class="col"><span class="col-name">urutan</span><span class="col-type">INT DEFAULT 0</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- RELATIONSHIP SUMMARY -->
+<div class="section">
+  <div class="card" style="padding:20px 28px;">
+    <h3 style="font-size:15px;margin-bottom:16px;color:var(--accent)">📋 Ringkasan Relasi (Foreign Keys)</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:12px;font-size:13px;">
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_pegawai.id_jabatan</b> → tb_jabatan.id_jabatan<br>
+        <span style="color:var(--muted)">Satu jabatan dimiliki banyak pegawai (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_pengguna.id_pegawai</b> → tb_pegawai.id_pegawai<br>
+        <span style="color:var(--muted)">Satu pegawai punya satu akun (1:1 UNIQUE)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd.id_pengaju</b> → tb_pegawai.id_pegawai<br>
+        <span style="color:var(--muted)">Satu pegawai ajukan banyak SPPD (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd.id_pimpinan</b> → tb_pegawai.id_pegawai<br>
+        <span style="color:var(--muted)">Satu pimpinan approve banyak SPPD (1:N, nullable)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd.id_kegiatan</b> → tb_jenis_kegiatan.id_kegiatan<br>
+        <span style="color:var(--muted)">Satu kegiatan dipakai banyak SPPD (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd.id_tujuan</b> → tb_tujuan.id_tujuan<br>
+        <span style="color:var(--muted)">Satu tujuan dipakai banyak SPPD (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd.id_anggaran</b> → tb_anggaran.id_anggaran<br>
+        <span style="color:var(--muted)">Satu anggaran dipakai banyak SPPD (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd_anggota.id_sppd</b> → tb_sppd.id_sppd<br>
+        <span style="color:var(--muted)">Satu SPPD punya banyak anggota (1:N, CASCADE)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_sppd_anggota.id_pegawai</b> → tb_pegawai.id_pegawai<br>
+        <span style="color:var(--muted)">Satu pegawai jadi anggota banyak rombongan (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_biaya_perjalanan.id_sppd</b> → tb_sppd.id_sppd<br>
+        <span style="color:var(--muted)">Satu SPPD punya banyak biaya (1:N, CASCADE)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_biaya_perjalanan.id_komponen</b> → tb_komponen_biaya.id_komponen<br>
+        <span style="color:var(--muted)">Satu komponen dipakai banyak biaya (1:N)</span>
+      </div>
+      <div style="padding:8px 12px;background:rgba(56,189,248,.05);border-radius:6px;border-left:3px solid var(--accent)">
+        <b>tb_laporan_dinas.id_sppd</b> → tb_sppd.id_sppd<br>
+        <span style="color:var(--muted)">Satu SPPD punya satu laporan (1:1 UNIQUE, CASCADE)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="section">
+  <div class="card" style="text-align:center; padding:16px;">
+    <a href="erd.html" style="color:var(--accent);text-decoration:none;font-size:14px;">Lihat ERD (Mermaid) &rarr;</a>
+    <span style="color:var(--muted);margin:0 12px">|</span>
+    <a href="activity_diagram.html" style="color:var(--accent);text-decoration:none;font-size:14px;">Activity Diagram &rarr;</a>
+    <span style="color:var(--muted);margin:0 12px">|</span>
+    <a href="flowmap.html" style="color:var(--accent);text-decoration:none;font-size:14px;">Flowmap &rarr;</a>
+    <span style="color:var(--muted);margin:0 12px">|</span>
+    <a href="index.php" style="color:var(--accent);text-decoration:none;font-size:14px;">Kembali ke Aplikasi &rarr;</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+      curve: 'basis'
+    },
+    themeVariables: {
+      primaryColor: '#3b82f6',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#2563eb',
+      lineColor: '#64748b',
+      secondaryColor: '#8b5cf6',
+      tertiaryColor: '#1e293b',
+      classText: '#e2e8f0',
+      fontFamily: 'Segoe UI, system-ui, sans-serif',
+      fontSize: '13px'
+    }
+  });
+</script>
+</body>
+</html>

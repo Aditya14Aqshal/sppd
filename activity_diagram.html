@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Activity Diagram — SPPD Bakesbangpol</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --purple: #a78bfa;
+    --teal: #2dd4bf;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; }
+  h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+  .section { max-width: 1500px; margin: 0 auto 40px; }
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .section-header h2 { font-size: 17px; font-weight: 600; }
+  .badge { font-size: 11px; padding: 3px 12px; border-radius: 20px; font-weight: 500; color: #fff; }
+  .badge-green { background: var(--green); }
+  .badge-blue { background: #3b82f6; }
+  .badge-amber { background: var(--amber); }
+  .badge-red { background: var(--red); }
+  .badge-purple { background: #8b5cf6; }
+  .badge-teal { background: #14b8a6; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; overflow-x: auto; }
+  .card .mermaid { min-height: 180px; }
+  .toc { max-width: 1500px; margin: 0 auto 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 20px 28px; }
+  .toc h3 { font-size: 14px; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 14px; padding: 6px 10px; border-radius: 6px; transition: background .15s; display: block; }
+  .toc a:hover { background: rgba(56,189,248,.1); }
+  .toc a span { color: var(--muted); font-size: 12px; }
+  .legend { max-width: 1500px; margin: 0 auto 40px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .legend-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+  .legend-shape { width: 28px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+  @media print {
+    body { background: #fff; color: #000; }
+    .card { border-color: #ccc; background: #fff; }
+    .toc, .legend { background: #f9f9f9; border-color: #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Activity Diagram — Sistem SPPD Bakesbangpol</h1>
+<p class="subtitle">Badan Kesatuan Bangsa dan Politik — Kota Kuala Kapuas &bull; Diagram Aktivitas UML Berbasis Kode Sumber</p>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h3>Daftar Diagram</h3>
+  <div class="toc-grid">
+    <a href="#login">1. Autentikasi & Session Management <span>&mdash; login.php, header.php</span></a>
+    <a href="#sppd-lifecycle">2. Siklus Hidup SPPD (Swimlanes) <span>&mdash; Workflow utama 6 status</span></a>
+    <a href="#ajukan">3. Pengajuan SPPD <span>&mdash; ajukan.php (4 step form)</span></a>
+    <a href="#detail-approval">4. Verifikasi & Persetujuan <span>&mdash; detail.php, approval.php</span></a>
+    <a href="#kelola">5. Kelola SPPD <span>&mdash; kelola.php (3 tab)</span></a>
+    <a href="#master">6. Master Data CRUD <span>&mdash; 9 halaman admin</span></a>
+    <a href="#upload">7. Upload File <span>&mdash; bukti & kwitansi</span></a>
+    <a href="#laporan">8. Laporan & Cetak Dokumen <span>&mdash; 9 rekap + 4 cetak</span></a>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span class="legend-title">Legenda:</span>
+  <div class="legend-item"><div class="legend-shape" style="background:#22c55e;border-radius:50%;width:22px;height:22px">S</div> Start / End</div>
+  <div class="legend-item"><div class="legend-shape" style="background:#3b82f6">A</div> Aktivitas / Proses</div>
+  <div class="legend-item"><div class="legend-shape" style="background:#f59e0b">?</div> Keputusan (Decision)</div>
+  <div class="legend-item"><div class="legend-shape" style="background:#8b5cf6">DB</div> Database Query</div>
+  <div class="legend-item"><div class="legend-shape" style="background:#ef4444">E</div> Error / Gagal</div>
+  <div class="legend-item"><div class="legend-shape" style="background:#14b8a6">F</div> Fork / Join (Parallel)</div>
+  <div class="legend-item" style="color:var(--muted)">Swimlane = kolom per role (Pegawai, Admin, Pimpinan, System)</div>
+</div>
+
+<!-- ==================== DIAGRAM 1: LOGIN ==================== -->
+<div class="section" id="login">
+  <div class="section-header">
+    <h2>1. Autentikasi & Session Management</h2>
+    <span class="badge badge-green">login.php + header.php + logout.php</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    START(("START<br/>index.php")) --> CEK_SESI{"session_start()<br/>$_SESSION['user_id']<br/>ada?"}
+    CEK_SESI -->|Ya| REDIR_DASH["Redirect →<br/>pages/dashboard/index.php"]
+    CEK_SESI -->|Tidak| REDIR_LOGIN["Redirect →<br/>pages/auth/login.php"]
+
+    REDIR_LOGIN --> CEK_SESI2{"$_SESSION['user_id']<br/>sudah ada?"}
+    CEK_SESI2 -->|Ya| REDIR_DASH2["Redirect →<br/>Dashboard (sudah login)"]
+    CEK_SESI2 -->|Tidak| TAMPIL_FORM["Tampilkan<br/>Form Login<br/>(split-screen layout)"]
+
+    TAMPIL_FORM --> USER_INPUT["User isi:<br/>- Username<br/>- Password"]
+    USER_INPUT --> SUBMIT{"POST<br/>Submit?"}
+    SUBMIT -->|Tidak| TAMPIL_FORM
+    SUBMIT -->|Ya| VALIDASI_EMPTY{"Username &<br/>Password<br/>tidak kosong?"}
+
+    VALIDASI_EMPTY -->|Kosong| ERR_EMPTY["Set error:<br/>'Username dan password<br/>wajib diisi'"]
+    ERR_EMPTY --> SHOW_ERR["Tampilkan alert-danger<br/>htmlspecialchars(error)"]
+    SHOW_ERR --> TAMPIL_FORM
+
+    VALIDASI_EMPTY -->|Lengkap| QUERY_DB["Query MySQL:<br/>SELECT u.id_pengguna,<br/>u.password, u.role,<br/>u.status, p.nama_lengkap<br/>FROM tb_pengguna u<br/>JOIN tb_pegawai p<br/>ON u.id_pegawai = p.id_pegawai<br/>WHERE u.username = ?<br/>(prepared statement)"]
+
+    QUERY_DB --> CEK_USER{"result ada?<br/>status = 'aktif'?<br/>password_verify(<br/>password, hash)?"}
+
+    CEK_USER -->|Gagal<br/>(salah/suspended)| ERR_AUTH["Set error:<br/>'Username atau password<br/>salah, atau akun<br/>tidak aktif'"]
+    ERR_AUTH --> SHOW_ERR
+
+    CEK_USER -->|Berhasil| SET_SESSION["Set Session:<br/>$_SESSION['user_id']<br/>$_SESSION['role']<br/>$_SESSION['nama']"]
+    SET_SESSION --> REDIR_DASH3["Redirect →<br/>Dashboard"]
+
+    REDIR_DASH3 --> HEADER_GUARD["header.php:<br/>session_start()<br/>cekJsession"]
+
+    HEADER_GUARD --> CEK_SESI3{"$_SESSION['user_id']<br/>ada?"}
+    CEK_SESI3 -->|Tidak| REDIR_LOGIN2["Redirect →<br/>Login + exit"]
+    CEK_SESI3 -->|Ya| EXTRACT_ROLE["Extract:<br/>$role = $_SESSION['role']<br/>$nama = $_SESSION['nama']"]
+    EXTRACT_ROLE --> RENDER_MENU["Render Sidebar Menu<br/>(role-based navigation)"]
+
+    RENDER_MENU --> ROLE_CHECK{"Role?"}
+    ROLE_CHECK -->|admin| ADMIN_MENU["Menu: Dashboard,<br/>Ajukan, Daftar,<br/>Master Data (9),<br/>Laporan, Cetak"]
+    ROLE_CHECK -->|pegawai| PEGAWAI_MENU["Menu: Dashboard,<br/>Ajukan, Daftar,<br/>Laporan, Cetak"]
+    ROLE_CHECK -->|pimpinan| PIMPINAN_MENU["Menu: Dashboard,<br/>Persetujuan,<br/>Laporan, Cetak"]
+
+    ADMIN_MENU --> PAGE_RENDER["Render halaman<br/>(setiap page include<br/>header.php + footer.php)"]
+    PEGAWAI_MENU --> PAGE_RENDER
+    PIMPINAN_MENU --> PAGE_RENDER
+
+    PAGE_RENDER --> LOGOUT["Logout<br/>(logout.php):<br/>session_start()<br/>session_destroy()<br/>Redirect → Login"]
+
+    LOGOUT --> END(("END"))
+
+    style START fill:#22c55e,color:#fff
+    style END fill:#ef4444,color:#fff
+    style CEK_SESI fill:#f59e0b,color:#fff
+    style CEK_SESI2 fill:#f59e0b,color:#fff
+    style CEK_SESI3 fill:#f59e0b,color:#fff
+    style SUBMIT fill:#f59e0b,color:#fff
+    style VALIDASI_EMPTY fill:#f59e0b,color:#fff
+    style CEK_USER fill:#f59e0b,color:#fff
+    style ROLE_CHECK fill:#f59e0b,color:#fff
+    style QUERY_DB fill:#8b5cf6,color:#fff
+    style SET_SESSION fill:#22c55e,color:#fff
+    style ERR_EMPTY fill:#ef4444,color:#fff
+    style ERR_AUTH fill:#ef4444,color:#fff
+    style REDIR_LOGIN fill:#64748b,color:#fff
+    style REDIR_LOGIN2 fill:#64748b,color:#fff
+    style REDIR_DASH fill:#3b82f6,color:#fff
+    style REDIR_DASH2 fill:#3b82f6,color:#fff
+    style REDIR_DASH3 fill:#3b82f6,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 2: SPPD LIFECYCLE (SWIMLANES) ==================== -->
+<div class="section" id="sppd-lifecycle">
+  <div class="section-header">
+    <h2>2. Siklus Hidup SPPD — Activity Diagram dengan Swimlanes</h2>
+    <span class="badge badge-blue">Workflow 6 status: draf → diajukan → diverifikasi → disetujui → selesai / ditolak</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    subgraph SWIM_PEGAWAI ["泳 SWIMLANE: Pegawai"]
+        direction TB
+        P_START(("START"))
+        P_START --> P_ISI_FORM["Isi Form Pengajuan<br/>ajukan.php<br/>- Data Pengaju (auto)<br/>- Detail Perjalanan<br/>- Sumber Anggaran"]
+        P_ISI_FORM --> P_VALIDASI{"Validasi:<br/>- Field wajib lengkap?<br/>- Tgl kembali ≥ berangkat?"}
+        P_VALIDASI -->|Gagal| P_ERR_FORM["Tampilkan error<br/>'Semua field wajib<br/>diisi' / 'Tanggal<br/>tidak valid'"]
+        P_ERR_FORM --> P_ISI_FORM
+        P_VALIDASI -->|OK| P_SIMPAN["INSERT tb_sppd<br/>(prepared statement)"]
+        P_SIMPAN --> P_PILIH{"submit_type?"}
+        P_PILIH -->|draf| P_STATUS_DRAF["Status = 'draf'<br/>Redirect → detail.php"]
+        P_PILIH -->|ajukan| P_STATUS_AJU["Status = 'diajukan'<br/>Redirect → detail.php"]
+
+        P_STATUS_AJUKAN["Pegawai menerima<br/>notifikasi status"] --> P_LAPOR["Isi Laporan Dinas<br/>kelola.php → tab Laporan<br/>- Tgl aktual<br/>- Uraian kegiatan<br/>- Upload bukti<br/>- Kesimpulan"]
+        P_LAPOR --> P_SIMPAN_LAP["INSERT/UPDATE<br/>tb_laporan_dinas<br/>(prepared statement)"]
+        P_SIMPAN_LAP --> P_AUTO_SELESAI["UPDATE tb_sppd<br/>SET status='selesai'<br/>(otomatis)"]
+        P_AUTO_SELESAI --> P_END(("END"))
+    end
+
+    subgraph SWIM_ADMIN ["泳 SWIMLANE: Admin"]
+        direction TB
+        A_START(("START"))
+        A_START --> A_LIHAT_DIAJUKAN["Melihat SPPD<br/>status = 'diajukan'<br/>di daftar.php"]
+        A_LIHAT_DIAJUKAN --> A_VERIFIKASI["Klik 'Verifikasi'<br/>detail.php"]
+        A_VERIFIKASI --> A_UPDATE_VERIF["UPDATE tb_sppd<br/>SET status='diverifikasi'<br/>(prepared statement)"]
+        A_UPDATE_VERIF --> A_NEXT_TO_PIMPINAN["SPPD diteruskan<br/>ke Pimpinan"]
+
+        A_LIHAT_DISETUJUI["Melihat SPPD<br/>status = 'disetujui'<br/>(no_sppd kosong)"]
+        A_LIHAT_DISETUJUI --> A_TERBITkan{"Terbitkan<br/>No. SPPD?"}
+        A_TERBITkan -->|Otomatis| A_GEN_NO["Generate:<br/>NNN/BKBP/BULAN_ROMAWI/TAHUN<br/>(query max + increment)"]
+        A_TERBITkan -->|Manual| A_MANUAL_NO["Admin input<br/>nomor manual"]
+        A_GEN_NO --> A_UPDATE_NO["UPDATE tb_sppd<br/>SET no_sppd = ...<br/>(prepared statement)"]
+        A_MANUAL_NO --> A_UPDATE_NO
+        A_UPDATE_NO --> A_SELESAI["SPPD siap<br/>dicetak"]
+    end
+
+    subgraph SWIM_PIMPINAN ["泳 SWIMLANE: Pimpinan"]
+        direction TB
+        I_START(("START"))
+        I_START --> I_LIHAT["Melihat SPPD<br/>status = 'diverifikasi'<br/>approval.php"]
+        I_LIHAT --> I_KEPUTusan{"Keputusan?"}
+        I_KEPUTusan -->|Setujui| I_SETUJUI["UPDATE tb_sppd<br/>SET status='disetujui',<br/>id_pimpinan=...,<br/>tgl_persetujuan=NOW()<br/>(prepared statement)"]
+        I_KEPUTusan -->|Tolak| I_TOLAK["UPDATE tb_sppd<br/>SET status='ditolak',<br/>catatan_tolak='...',<br/>id_pimpinan=...<br/>(prepared statement)"]
+        I_TOLAK --> Ipesan["Tampilkan catatan<br/>penolakan di<br/>detail.php"]
+    end
+
+    subgraph SWIM_SYSTEM ["泳 SWIMLANE: System"]
+        direction TB
+        S_START(("START"))
+        S_START --> S_CEK_AFFECTED["Cek affected_rows<br/>(race condition guard)"]
+        S_CEK_AFFECTED --> S_GUARD{"affected_rows<br/>> 0?"}
+        S_GUARD -->|Ya| S_OK["Update berhasil<br/>Redirect + pesan sukses"]
+        S_GUARD -->|Tidak| S_FAIL["Update gagal<br/>(sudah diubah)<br/>Redirect + pesan error"]
+        S_OK --> S_LOG["Log aktivitas<br/>(implicit: session data)"]
+    end
+
+    P_STATUS_AJU -.->|admin melihat| A_LIHAT_DIAJUKAN
+    A_NEXT_TO_PIMPINAN -.->|pimpinan melihat| I_LIHAT
+    I_SETUJUI -.->|admin terbitkan| A_LIHAT_DISETUJUI
+    A_SELESAI -.->|pegawai isi laporan| P_LAPOR
+
+    style SWIM_PEGAWAI fill:#d5f5e3,stroke:#27ae60,color:#1a1a1a
+    style SWIM_ADMIN fill:#d6eaf8,stroke:#2980b9,color:#1a1a1a
+    style SWIM_PIMPINAN fill:#fdebd0,stroke:#e67e22,color:#1a1a1a
+    style SWIM_SYSTEM fill:#f0e6ff,stroke:#8b5cf6,color:#1a1a1a
+    style P_START fill:#22c55e,color:#fff
+    style P_END fill:#ef4444,color:#fff
+    style A_START fill:#22c55e,color:#fff
+    style I_START fill:#22c55e,color:#fff
+    style S_START fill:#22c55e,color:#fff
+    style P_VALIDASI fill:#f59e0b,color:#fff
+    style P_PILIH fill:#f59e0b,color:#fff
+    style A_TERBITkan fill:#f59e0b,color:#fff
+    style I_KEPUTusan fill:#f59e0b,color:#fff
+    style S_GUARD fill:#f59e0b,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 3: PENGAJUAN SPPD ==================== -->
+<div class="section" id="ajukan">
+  <div class="section-header">
+    <h2>3. Pengajuan SPPD — Detail Activity</h2>
+    <span class="badge badge-amber">ajukan.php — 4-step form</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    AKSES["Buka ajukan.php"] --> CEK_AKSES{"Role =<br/>pegawai / admin?"}
+    CEK_AKSES -->|Tidak| DENY["echo '<div class=alert-danger>'<br/>Akses ditolak"]
+    CEK_AKSES -->|Ya| LOAD_USER["Query:<br/>SELECT id_pegawai<br/>FROM tb_pengguna<br/>WHERE id_pengguna =<br/>$_SESSION['user_id']"]
+    LOAD_USER --> LOAD_JABATAN["Query:<br/>SELECT nama_jabatan,<br/>golongan, pangkat<br/>FROM tb_jabatan<br/>WHERE id_jabatan = ..."]
+    LOAD_JABATAN --> LOAD_DROPDOWN["Query dropdown:<br/>- tb_tujuan (aktif)<br/>- tb_jenis_kegiatan (aktif)<br/>- tb_anggaran (aktif)"]
+
+    LOAD_DROPDOWN --> STEP1["<b>Step 1:</b> Data Pengaju<br/>(auto-fill, disabled)"]
+    STEP1 --> STEP2["<b>Step 2:</b> Detail Perjalanan<br/>- Kegiatan (dropdown)<br/>- Tujuan (dropdown)<br/>- Keperluan (textarea)<br/>- Tgl berangkat / kembali<br/>- Kendaraan"]
+    STEP2 --> HITUNG_DURASI["JavaScript:<br/>hitungDurasi()<br/>otomatis hitung<br/>durasi perjalanan"]
+    HITUNG_DURASI --> STEP3["<b>Step 3:</b> Sumber Anggaran<br/>(dropdown anggaran)"]
+    STEP3 --> STEP4["<b>Step 4:</b> Konfirmasi<br/>2 tombol submit"]
+
+    STEP4 --> CEK_SUBMIT{"Tombol<br/>diklik?"}
+    CEK_SUBMIT -->|Simpan Draf| SET_DRAF["submit_type = 'draf'<br/>status = 'draf'"]
+    CEK_SUBMIT -->|Ajukan SPPD| SET_AJU["submit_type = 'ajukan'<br/>status = 'diajukan'"]
+
+    SET_DRAF --> VALIDASI_FORM{"Validasi Server:<br/>1. Semua field wajib<br/>tidak kosong?<br/>2. tgl_kembali ≥<br/>tgl_berangkat?"}
+    SET_AJU --> VALIDASI_FORM
+
+    VALIDASI_FORM -->|Gagal| ERROR_VALIDASI["$_SESSION['error'] =<br/>'Semua field bertanda *<br/>wajib diisi' /<br/>'Tanggal kembali tidak<br/>boleh sebelum<br/>tanggal berangkat'"]
+    ERROR_VALIDASI --> REDIR_BACK["Redirect →<br/>ajukan.php?error=1"]
+    REDIR_BACK --> STEP1
+
+    VALIDASI_FORM -->|OK| INSERT_SPPD["INSERT INTO tb_sppd<br/>(id_pengaju, id_kegiatan,<br/>id_tujuan, id_anggaran,<br/>keperluan, tgl_berangkat,<br/>tgl_kembali, kendaraan,<br/>status, tgl_pengajuan)<br/>VALUES (...)<br/>(prepared statement)<br/>Auto: tgl_pengajuan=NOW()"]
+    INSERT_SPPD --> CEK_INSERT{"INSERT<br/>berhasil?"}
+    CEK_INSERT -->|Gagal| ERR_DB["$_SESSION['error'] =<br/>'Gagal menyimpan data'"]
+    ERR_DB --> REDIR_BACK2["Redirect →<br/>ajukan.php?error=1"]
+    REDIR_BACK2 --> STEP1
+
+    CEK_INSERT -->|Berhasil| REDIR_DETAIL["Redirect →<br/>detail.php?id=$new_id<br/>&msg=draf/diajukan"]
+
+    REDIR_DETAIL --> TAMPIL_DETAIL["Tampilkan detail<br/>SPPD baru<br/>+ success message"]
+
+    style AKSES fill:#3b82f6,color:#fff
+    style DENY fill:#ef4444,color:#fff
+    style STEP1 fill:#3b82f6,color:#fff
+    style STEP2 fill:#3b82f6,color:#fff
+    style STEP3 fill:#3b82f6,color:#fff
+    style STEP4 fill:#3b82f6,color:#fff
+    style VALIDASI_FORM fill:#f59e0b,color:#fff
+    style CEK_SUBMIT fill:#f59e0b,color:#fff
+    style CEK_AKSES fill:#f59e0b,color:#fff
+    style CEK_INSERT fill:#f59e0b,color:#fff
+    style INSERT_SPPD fill:#8b5cf6,color:#fff
+    style ERROR_VALIDASI fill:#ef4444,color:#fff
+    style ERR_DB fill:#ef4444,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 4: VERIFIKASI & PERSETUJUAN ==================== -->
+<div class="section" id="detail-approval">
+  <div class="section-header">
+    <h2>4. Verifikasi & Persetujuan SPPD</h2>
+    <span class="badge badge-purple">detail.php + approval.php — Admin & Pimpinan</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    DETAIL["Buka detail.php?id=X"] --> QUERY_SPPD["Query:<br/>SELECT s.*, p.nama_lengkap,<br/>t.nama_instansi, jk.nama_kegiatan<br/>FROM tb_sppd s<br/>JOIN tb_pegawai p<br/>JOIN tb_tujuan t<br/>JOIN tb_jenis_kegiatan jk<br/>WHERE s.id_sppd = $id<br/>(prepared statement)"]
+    QUERY_SPPD --> CEK_DATA{"Data<br/>ditemukan?"}
+    CEK_DATA -->|Tidak| ERR_404["Tampilkan:<br/>'Data tidak ditemukan'"]
+    CEK_DATA -->|Ya| TAMPIL["Tampilkan:<br/>- Info pengaju + jabatan<br/>- Detail perjalanan<br/>- Anggota rombongan<br/>- Biaya realisasi<br/>- Laporan dinas<br/>- Status + timeline"]
+
+    TAMPIL --> CEK_ROLE{"$_SESSION['role']?"}
+
+    CEK_ROLE -->|admin| ADMIN_FLOW
+    CEK_ROLE -->|pimpinan| PIMP_FLOW
+    CEK_ROLE -->|pegawai| PEGAWAI_VIEW
+
+    subgraph ADMIN_FLOW ["Admin Actions"]
+        direction TB
+        AF_STATUS{"Status SPPD?"}
+        AF_STATUS -->|"diajukan"| AF_VERIF_BTN["Tampilkan tombol:<br/>'Verifikasi &<br/>Teruskan ke Pimpinan'"]
+        AF_VERIF_BTN --> AF_CLICK["Admin klik<br/>'Verifikasi'"]
+        AF_CLICK --> AF_UPDATE["POST action='verifikasi'<br/>UPDATE tb_sppd<br/>SET status='diverifikasi'<br/>WHERE id_sppd=$id<br/>(prepared statement)"]
+        AF_UPDATE --> AF_REDIRECT["Redirect →<br/>detail.php?msg=verified"]
+
+        AF_STATUS -->|"disetujui<br/>& no_sppd kosong"| AF_TERBIT["Tampilkan form<br/>Terbitkan No. SPPD"]
+        AF_TERBIT --> AF_AUTO_GEN{"Auto generate?"}
+        AF_AUTO_GEN -->|Ya| AF_GEN["Query MAX(no_sppd):<br/>SELECT no_sppd<br/>FROM tb_sppd<br/>WHERE no_sppd LIKE<br/>'%BKBP/MONTH/YEAR'<br/>+ increment sequence<br/>+ format: NNN/BKBP/MONTH_ROMAWI/YEAR"]
+        AF_AUTO_GEN -->|Manual| AF_MANUAL["Admin input<br/>nomor manual"]
+        AF_GEN --> AF_UPDATE_NO["UPDATE tb_sppd<br/>SET no_sppd = ...<br/>(prepared statement)"]
+        AF_MANUAL --> AF_UPDATE_NO
+        AF_UPDATE_NO --> AF_REDIR["Redirect →<br/>detail.php?msg=published"]
+
+        AF_STATUS -->|"lainnya"| AF_NOOP["Tidak ada<br/>tindakan tersedia"]
+    end
+
+    subgraph PIMP_FLOW ["Pimpinan Actions"]
+        direction TB
+        PI_STATUS{"Status =<br/>diverifikasi?"}
+        PI_STATUS -->|Ya| PI_AKTIF["Tampilkan tombol:<br/>'Setujui' + 'Tolak'<br/>+ form catatan"]
+        PI_AKTIF --> PI_KEPUTUSAN{"Keputusan?"}
+        PI_KEPUTUSAN -->|Setujui| PI_SETUJUI["POST action='setuju'<br/>UPDATE tb_sppd<br/>SET status='disetujui',<br/>id_pimpinan=$id_peg_pim,<br/>tgl_persetujuan=NOW()<br/>WHERE id_sppd=$id<br/>AND status='diverifikasi'<br/>(race condition guard)"]
+        PI_SETUJUI --> PI_CEK_ROWS{"affected_rows<br/>> 0?"}
+        PI_CEK_ROWS -->|Ya| PI_OK["Redirect →<br/>detail.php?msg=approved"]
+        PI_CEK_ROWS -->|Tidak| PI_FAIL["Redirect →<br/>detail.php?error=already"]
+
+        PI_KEPUTUSAN -->|Tolak| PI_TOLAK["POST action='tolak'<br/>- Buka modal<br/>- Wajib isi catatan_tolak<br/>UPDATE tb_sppd<br/>SET status='ditolak',<br/>catatan_tolak='$catatan',<br/>id_pimpinan=$id_peg_pim<br/>WHERE id_sppd=$id<br/>AND status='diverifikasi'"]
+        PI_TOLAK --> PI_CEK_ROWS2{"affected_rows<br/>> 0?"}
+        PI_CEK_ROWS2 -->|Ya| PI_REJECT_OK["Redirect →<br/>detail.php?msg=rejected"]
+        PI_CEK_ROWS2 -->|Tidak| PI_REJECT_FAIL["Redirect →<br/>detail.php?error=already"]
+
+        PI_STATUS -->|Tidak| PI_VIEW_ONLY["Hanya tampilkan<br/>detail (read-only)"]
+    end
+
+    subgraph PEGAWAI_VIEW ["Pegawai View"]
+        direction TB
+        PV_ONLY["Pegawai hanya<br/>melihat detail<br/>SPPD milik sendiri"]
+        PV_ONLY --> PV_CHECK_OWN{"id_pengaju =<br/>$_SESSION['user_id']?"}
+        PV_CHECK_OWN -->|Ya| PV_SHOW["Tampilkan detail<br/>(read-only)"]
+        PV_CHECK_OWN -->|Tidak| PV_HIDE["Tidak ada<br/>aksi tersedia"]
+    end
+
+    subgraph APPROVAL_PAGE ["Approval Page (approval.php)"]
+        direction TB
+        AP_LOAD["Load semua SPPD<br/>status = 'diverifikasi'"]
+        AP_LOAD --> AP_LIST["Tampilkan tabel:<br/>- No. SPPD<br/>- Pengaju<br/>- Kegiatan<br/>- Tgl pengajuan<br/>- Tombol Setujui/Tolak"]
+        AP_LIST --> AP_BULK{"Bulk<br/>Actions?"}
+        AP_BULK -->|Setujui| AP_SETUJUI["POST setuju<br/>+ AND status='diverifikasi'<br/>(race condition guard)"]
+        AP_BULK -->|Tolak| AP_TOLAK["POST tolak<br/>+ modal catatan"]
+    end
+
+    DETAIL --> CEK_ROLE_APPROVAL{"Role = pimpinan?"}
+    CEK_ROLE_APPROVAL -->|Ya| LINK_APPROVAL["Link ke<br/>approval.php"]
+    LINK_APPROVAL --> AP_LOAD
+
+    style DETAIL fill:#3b82f6,color:#fff
+    style CEK_DATA fill:#f59e0b,color:#fff
+    style CEK_ROLE fill:#f59e0b,color:#fff
+    style CEK_ROLE_APPROVAL fill:#f59e0b,color:#fff
+    style AF_STATUS fill:#f59e0b,color:#fff
+    style PI_STATUS fill:#f59e0b,color:#fff
+    style PI_KEPUTUSAN fill:#f59e0b,color:#fff
+    style PI_CEK_ROWS fill:#f59e0b,color:#fff
+    style PI_CEK_ROWS2 fill:#f59e0b,color:#fff
+    style AF_AUTO_GEN fill:#f59e0b,color:#fff
+    style AP_BULK fill:#f59e0b,color:#fff
+    style PV_CHECK_OWN fill:#f59e0b,color:#fff
+    style ERR_404 fill:#ef4444,color:#fff
+    style PI_FAIL fill:#ef4444,color:#fff
+    style PI_REJECT_FAIL fill:#ef4444,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 5: KELOLA SPPD ==================== -->
+<div class="section" id="kelola">
+  <div class="section-header">
+    <h2>5. Kelola SPPD — 3 Tab Activity</h2>
+    <span class="badge badge-teal">kelola.php — Anggota, Laporan, Biaya</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    KELOLA["Buka kelola.php?id=X"] --> CEK_SPPD["Query SPPD +<br/>Cek hak akses"]
+    CEK_SPPD --> TAB{"Tab<br/>aktif?"}
+
+    TAB -->|"anggota<br/>(default)"| ANGGOTA_TAB
+    TAB -->|"laporan"| LAPORAN_TAB
+    TAB -->|"biaya"| BIAYA_TAB
+
+    subgraph ANGGOTA_TAB ["Tab: Anggota Rombongan"]
+        direction TB
+        AT_LOAD["Load:<br/>SELECT * FROM<br/>tb_sppd_anggota<br/>WHERE id_sppd=$id"]
+        AT_LOAD --> AT_LIST["Tampilkan daftar<br/>anggota + peran"]
+        AT_LIST --> AT_Aksi{"Aksi?"}
+
+        AT_Aksi -->|Tambah| AT_FORM["FormTambah:<br/>- Pilih pegawai<br/>(dropdown)<br/>- Pilih peran"]
+        AT_FORM --> AT_CEK_DUP{"Cek duplikat:<br/>SELECT COUNT(*)<br/>FROM tb_sppd_anggota<br/>WHERE id_sppd=$id<br/>AND id_pegawai=$id_peg"}
+        AT_CEK_DUP -->|Sudah ada| AT_ERR_DUP["Set error:<br/>'Pegawai sudah ada<br/>dalam rombongan'"]
+        AT_CEK_DUP -->|Baru| AT_INSERT["INSERT<br/>tb_sppd_anggota<br/>(id_sppd, id_pegawai,<br/>peran)<br/>(prepared statement)"]
+        AT_INSERT --> AT_REDIRECT["Redirect →<br/>kelola.php?id=X<br>&tab=anggota"]
+
+        AT_Aksi -->|Hapus| AT_HAPUS["GET ?hapus_anggota=Y<br/>JavaScript confirm:<br/>'Hapus anggota ini?'"]
+        AT_HAPUS --> AT_DEL["DELETE FROM<br/>tb_sppd_anggota<br/>WHERE id_anggota=$hid<br/>AND id_sppd=$id<br/>(prepared statement)"]
+        AT_DEL --> AT_REDIRECT
+    end
+
+    subgraph LAPORAN_TAB ["Tab: Laporan Hasil Dinas"]
+        direction TB
+        LT_LOAD["Load laporan existing<br/>tb_laporan_dinas<br/>WHERE id_sppd=$id"]
+        LT_LOAD --> LT_FORM["Form Laporan:<br/>- Tgl aktual dinas<br/>- Uraian kegiatan<br/>- Upload bukti (foto)<br/>- Kesimpulan"]
+        LT_FORM --> LT_VALIDASI{"Validasi:<br/>uraian_kegiatan<br/>tidak kosong?"}
+        LT_VALIDASI -->|Kosong| LT_ERR["Set error:<br/>'Uraian kegiatan<br/>wajib diisi'"]
+        LT_ERR --> LT_FORM
+
+        LT_VALIDASI -->|OK| LT_CEK_FILE{"File<br/>diupload?"}
+        LT_CEK_FILE -->|Ya| LT_UPLOAD["Upload bukti_file:<br/>ext = pathinfo(name)<br/>fname = 'bukti_' + id<br/>+ '_' + time() + '.' + ext<br/>move_uploaded_file →<br/>assets/uploads/$fname"]
+        LT_UPLOAD --> LT_CEK_MOVE{"Upload<br/>berhasil?"}
+        LT_CEK_MOVE -->|Gagal| LT_ERR_FILE["Set error:<br/>'Gagal upload file'"]
+        LT_CEK_MOVE -->|Berhasil| LT_SET_FILE["$file = fname"]
+        LT_CEK_FILE -->|Tidak| LT_NO_FILE["$file = '' (kosong)"]
+
+        LT_SET_FILE --> LT_CEK_EXIST{"Laporan<br/>sudah ada?"}
+        LT_NO_FILE --> LT_CEK_EXIST
+
+        LT_CEK_EXIST -->|Ya| LT_UPDATE["UPDATE tb_laporan_dinas<br/>SET uraian=..., tgl_aktual=...,<br/>kesimpulan=...,<br/>bukti_file=COALESCE(<br/>NULLIF($file,''),<br/>bukti_file)<br/>(preserve existing)"]
+        LT_CEK_EXIST -->|Tidak| LT_INSERT["INSERT<br/>tb_laporan_dinas<br/>(id_sppd, tgl_aktual,<br/>uraian, bukti_file,<br/>kesimpulan)"]
+
+        LT_UPDATE --> LT_AUTO_DONE["UPDATE tb_sppd<br/>SET status='selesai'<br/>(OTOMATIS)"]
+        LT_INSERT --> LT_AUTO_DONE
+        LT_AUTO_DONE --> LT_WARN["Tampilkan warning:<br/>'Setelah menyimpan laporan,<br/>status SPPD akan berubah<br/>menjadi Selesai'"]
+        LT_WARN --> LT_REDIRECT["Redirect →<br/>kelola.php?id=X<br>&tab=laporan"]
+    end
+
+    subgraph BIAYA_TAB ["Tab: Rincian Biaya"]
+        direction TB
+        BT_LOAD["Load biaya:<br/>SELECT bp.*, kb.*<br/>FROM tb_biaya_perjalanan bp<br/>JOIN tb_komponen_biaya kb<br/>WHERE bp.id_sppd=$id<br/>+ hitung SUM(total)"]
+        BT_LOAD --> BT_TABLE["Tampilkan tabel:<br/>- Komponen<br/>- Golongan<br/>- Zona<br/>- Hari<br/>- Besaran<br/>- Total<br/>- Kwitansi<br/>- Tombol Hapus"]
+        BT_TABLE --> BT_Aksi{"Aksi?"}
+
+        BT_Aksi -->|Tambah| BT_FORM["Form Tambah Biaya:<br/>- Komponen (dropdown)<br/>- Jumlah hari<br/>- Besaran realisasi<br/>- Upload kwitansi"]
+        BT_FORM --> BT_VALIDASI{"Validasi:<br/>- Komponen dipilih?<br/>- Hari > 0?<br/>- Besaran > 0?"}
+        BT_VALIDASI -->|Gagal| BT_ERR["Set error:<br/>'Semua field<br/>wajib diisi'"]
+        BT_ERR --> BT_FORM
+
+        BT_VALIDASI -->|OK| BT_CEK_KWI{"Kwitansi<br/>diupload?"}
+        BT_CEK_KWI -->|Ya| BT_UPLOAD_KWI["Upload kwitansi_file:<br/>fname = 'kwi_' + id<br/>+ '_' + time() + '.' + ext<br/>move_uploaded_file →<br/>assets/uploads/$fname"]
+        BT_CEK_KWI -->|Tidak| BT_NO_KWI["$file_kwitansi = ''"]
+
+        BT_UPLOAD_KWI --> BT_INSERT["INSERT<br/>tb_biaya_perjalanan<br/>(id_sppd, id_komponen,<br/>jumlah_hari,<br/>besaran_realisasi,<br/>kwitansi_file)<br/>(prepared statement)"]
+        BT_NO_KWI --> BT_INSERT
+        BT_INSERT --> BT_REDIRECT["Redirect →<br/>kelola.php?id=X<br>&tab=biaya"]
+
+        BT_Aksi -->|Hapus| BT_HAPUS["GET ?hapus_biaya=Y<br/>JavaScript confirm:<br/>'Hapus biaya ini?'"]
+        BT_HAPUS --> BT_DEL["DELETE FROM<br/>tb_biaya_perjalanan<br/>WHERE id_biaya=$hid<br/>AND id_sppd=$id<br/>(prepared statement)"]
+        BT_DEL --> BT_REDIRECT
+
+        BT_TABLE --> BT_CETAK["Link: Cetak Rincian Biaya<br/>cetak_biaya.php?id=X<br/>(window.open, new tab)"]
+    end
+
+    style KELOLA fill:#8e44ad,color:#fff
+    style ANGGOTA_TAB fill:#d5f5e3,stroke:#27ae60,color:#1a1a1a
+    style LAPORAN_TAB fill:#fdebd0,stroke:#e67e22,color:#1a1a1a
+    style BIAYA_TAB fill:#d6eaf8,stroke:#2980b9,color:#1a1a1a
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 6: MASTER DATA CRUD ==================== -->
+<div class="section" id="master">
+  <div class="section-header">
+    <h2>6. Master Data CRUD</h2>
+    <span class="badge badge-red">9 halaman admin — Pola umum + fitur khusus</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    MASTER_ENTRY["Buka halaman Master Data"] --> CEK_ADMIN{"Role =<br/>admin?"}
+    CEK_ADMIN -->|Tidak| DENY_MASTER["echo alert-danger<br/>'Akses ditolak'<br/>exit"]
+    CEK_ADMIN -->|Ya| INIT["$msg = $err = ''<br/>$id = null"]
+
+    INIT --> CEK_HAPUS{"GET param<br/>'hapus' ada?"}
+    CEK_HAPUS -->|Ya| CEK_REF{"Tabel punya<br/>referensi?<br/>(kegiatan: cek<br/>tb_sppd COUNT)"}
+    CEK_REF -->|Ada referensi| ERR_REF["Set error:<br/>'Data masih digunakan<br/>di table lain'<br/>+ tampilkan COUNT"]
+    CEK_REF -->|Aman / tidak ada| DELETE_REC["DELETE FROM $table<br/>WHERE id = $hid<br/>(prepared statement)"]
+    DELETE_REC --> REDIR_LIST["Redirect →<br/>halaman yang sama"]
+    ERR_REF --> REDIR_LIST
+
+    CEK_HAPUS -->|Tidak| CEK_TOGGLE{"GET param<br/>'toggle' ada?"}
+    CEK_TOGGLE -->|Ya| TOGGLE_STATUS["UPDATE status<br/>aktif ↔ nonaktif<br/>(kegiatan, pengguna)"]
+    TOGGLE_STATUS --> REDIR_LIST
+
+    CEK_TOGGLE -->|Tidak| CEK_EDIT{"GET param<br/>'edit' ada?"}
+    CEK_EDIT -->|Ya| LOAD_EDIT["Query SELECT *<br/>WHERE id = $edit_id<br/>(prepared statement)<br/>Pre-fill form"]
+    LOAD_EDIT --> CEK_POST
+
+    CEK_EDIT -->|Tidak| CEK_POST{"POST<br/>submit?"}
+    CEK_POST -->|Tidak| SHOW_FORM["Tampilkan form<br/>+ tabel data"]
+
+    CEK_POST -->|Ya| EXTRACT["Extract form fields<br/>(trim strings)"]
+    EXTRACT --> VALIDATE{"Validasi:<br/>Field wajib<br/>tidak kosong?"}
+    VALIDATE -->|Kosong| SET_ERR["Set $err message<br/>'Field wajib<br/>wajib diisi'"]
+    SET_ERR --> SHOW_FORM
+
+    VALIDATE -->|Lengkap| CHECK_ID{"$id ada?<br/>(Edit / Add)"}
+    CHECK_ID -->|Edit ($id)| UPDATE["UPDATE $table<br/>SET field1=?, ...<br/>WHERE id=$id<br/>(prepared statement)"]
+    CHECK_ID -->|Add (new)| CHECK_UNIQUE{"Cek unique<br/>(username, NIP, dll)"}
+    CHECK_UNIQUE -->|Duplikat| ERR_DUP["Set $err message<br/>'... sudah ada'"]
+    ERR_DUP --> SHOW_FORM
+    CHECK_UNIQUE -->|Baru| INSERT["INSERT INTO $table<br/>(field1, field2, ...)<br/>VALUES (?, ?, ...)<br/>(prepared statement)"]
+
+    UPDATE --> CEK_OK{"affected_rows<br/>> 0?"}
+    INSERT --> CEK_OK
+    CEK_OK -->|Ya| SET_MSG["Set $msg =<br/>'Data berhasil<br/>disimpan'"]
+    CEK_OK -->|Tidak| SET_ERR2["Set $err =<br/>'Gagal menyimpan<br/>data'"]
+    SET_MSG --> REDIR_LIST
+    SET_ERR2 --> REDIR_LIST
+
+    SHOW_FORM --> TABLE_DATA["Tampilkan tabel data<br/>+ Kolom Aksi:<br/>- Edit (link)<br/>- Hapus (confirm)<br/>- Toggle (khusus)"]
+    TABLE_DATA --> END_MASTER(("END"))
+
+    subgraph FITUR_KHUSUS ["Fitur Khusus per Entity"]
+        direction LR
+        F1["Pengguna:<br/>- Reset password<br/>(Password123)<br/>- Toggle aktif/nonaktif<br/>- Self-delete guard"]
+        F2["Kegiatan:<br/>- Referential check<br/>- Toggle status<br/>- Usage count"]
+        F3["Unit Kerja:<br/>- Auto-create table<br/>- Auto-seed if empty"]
+        F4["Dasar Hukum:<br/>- Auto-create table<br/>- Auto-seed if empty<br/>- urutan ordering"]
+        F5["Komponen Biaya:<br/>- Dead code bug<br/>(prepared stmt<br/>duplikat)"]
+    end
+
+    style MASTER_ENTRY fill:#3b82f6,color:#fff
+    style CEK_ADMIN fill:#f59e0b,color:#fff
+    style DENY_MASTER fill:#ef4444,color:#fff
+    style CEK_HAPUS fill:#f59e0b,color:#fff
+    style CEK_TOGGLE fill:#f59e0b,color:#fff
+    style CEK_EDIT fill:#f59e0b,color:#fff
+    style CEK_POST fill:#f59e0b,color:#fff
+    style CHECK_ID fill:#f59e0b,color:#fff
+    style CHECK_UNIQUE fill:#f59e0b,color:#fff
+    style VALIDATE fill:#f59e0b,color:#fff
+    style CEK_OK fill:#f59e0b,color:#fff
+    style DELETE_REC fill:#ef4444,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 7: UPLOAD FILE ==================== -->
+<div class="section" id="upload">
+  <div class="section-header">
+    <h2>7. Upload File Activity</h2>
+    <span class="badge badge-amber">kelola.php — Bukti Kehadiran & Kwitansi</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    USER_SELECT["User memilih file<br/>Input: enctype='multipart/form-data'<br/>Accept: .jpg, .jpeg, .png, .pdf"] --> RECEIVE["PHP menerima<br/>$_FILES['bukti_file']<br/>atau $_FILES['kwitansi_file']"]
+
+    RECEIVE --> CHECK_NAME{"file['name']<br/>tidak kosong?"}
+    CHECK_NAME -->|Kosong| SKIP["$file = ''<br/>(tidak ada upload)"]
+
+    CHECK_NAME -->|Ada| EXTRACT_EXT["$ext = pathinfo(<br/>file['name'],<br/>PATHINFO_EXTENSION)"]
+    EXTRACT_EXT --> GEN_NAME{"Tipe<br/>file?"}
+    GEN_NAME -->|bukti_file| FNAME_BUKTI["$fname = 'bukti_'<br/>. $id . '_'<br/>. time()<br/>. '.' . $ext"]
+    GEN_NAME -->|kwitansi_file| FNAME_KWI["$fname = 'kwi_'<br/>. $id . '_'<br/>. time()<br/>. '.' . $ext"]
+
+    FNAME_BUKTI --> DEST["$dest = '../../<br/>assets/uploads/'<br/>. $fname"]
+    FNAME_KWI --> DEST
+
+    DEST --> MOVE["move_uploaded_file(<br/>$_FILES[...]['tmp_name'],<br/>$dest)"]
+    MOVE --> MOVE_OK{"Upload<br/>berhasil?"}
+    MOVE_OK -->|Gagal| ERR_MOVE["Set error<br/>'Gagal upload file'<br/>(server permission?)"]
+    MOVE_OK -->|Berhasil| SET_FNAME["$file = $fname<br/>(simpan ke DB)"]
+
+    SET_FNAME --> DB_SAVE{"Update<br/>laporan / biaya?"}
+    DB_SAVE -->|Laporan| DB_LAP["UPDATE tb_laporan_dinas<br/>SET bukti_file=<br/>COALESCE(<br/>NULLIF($file,''),<br/>bukti_file)<br/>(preserve existing)"]
+    DB_SAVE -->|Biaya| DB_KWI["INSERT/UPDATE<br/>tb_biaya_perjalanan<br/>SET kwitansi_file=$file"]
+
+    DB_LAP --> DONE(("Selesai"))
+    DB_KWI --> DONE
+    SKIP --> DB_SAVE_SKIP["Gunakan file<br/>existing (jika ada)"]
+    DB_SAVE_SKIP --> DONE
+    ERR_MOVE --> DONE
+
+    style USER_SELECT fill:#3b82f6,color:#fff
+    style RECEIVE fill:#8b5cf6,color:#fff
+    style CHECK_NAME fill:#f59e0b,color:#fff
+    style GEN_NAME fill:#f59e0b,color:#fff
+    style MOVE_OK fill:#f59e0b,color:#fff
+    style ERR_MOVE fill:#ef4444,color:#fff
+    style DONE fill:#22c55e,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DIAGRAM 8: LAPORAN & CETAK ==================== -->
+<div class="section" id="laporan">
+  <div class="section-header">
+    <h2>8. Laporan & Cetak Dokumen</h2>
+    <span class="badge badge-green">9 rekap + 4 cetak — Filter → Query → Display → Print</span>
+  </div>
+  <div class="card">
+    <div class="mermaid">
+flowchart TD
+    LAP_ENTRY["Buka halaman Laporan"] --> CEK_AKSES_LAP{"Role =<br/>admin / pimpinan<br/>untuk Rekap Anggaran?"}
+    CEK_AKSES_LAP -->|Tidak| DENY_LAP["Akses ditolak"]
+    CEK_AKSES_LAP -->|Ya| PILIH_LAP{"Pilih Jenis<br/>Laporan?"}
+
+    PILIH_LAP -->|"Rekap SPPD"| R_SPPD["rekap_sppd.php<br/>Filter: Bulan, Tahun, Status<br/>Query: tb_sppd + JOIN"]
+    PILIH_LAP -->|"Rekap per Bulan"| R_BULAN["rekap_bulan.php<br/>Filter: Tahun<br/>GROUP BY MONTH(tgl_pengajuan)"]
+    PILIH_LAP -->|"Rekap per Pegawai"| R_PEGAWAI["rekap_pegawai.php<br/>Filter: Pegawai (wajib), Tahun<br/>WHERE id_pegawai = ?"]
+    PILIH_LAP -->|"Rekap per Unit"| R_UNIT["rekap_unit.php<br/>Filter: Tahun<br/>GROUP BY unit_kerja"]
+    PILIH_LAP -->|"Rekap per Kegiatan"| R_KEGIATAN["rekap_kegiatan.php<br/>Filter: Tahun<br/>GROUP BY id_kegiatan"]
+    PILIH_LAP -->|"Rekap per Tujuan"| R_TUJUAN["rekap_tujuan.php<br/>Filter: Tahun<br/>GROUP BY id_tujuan"]
+    PILIH_LAP -->|"Status SPPD"| R_STATUS["rekap_status.php<br/>Filter: Tahun<br/>GROUP BY status<br/>(+ visual bars)"]
+    PILIH_LAP -->|"Rekap Anggaran"| R_ANGGARAN["rekap_anggaran.php<br/>Filter: Tahun<br/>Query: tb_anggaran +<br/>tb_sppd +<br/>tb_biaya_perjalanan<br/>Hanya status:<br/>disetujui / selesai"]
+    PILIH_LAP -->|"Pegawai Teraktif"| R_AKTIF["rekap_pegawai_aktif.php<br/>Filter: Tahun<br/>GROUP BY id_pegawai<br/>HAVING total_sppd > 0<br/>ORDER BY total DESC"]
+
+    R_SPPD --> DISPLAY_REPORT
+    R_BULAN --> DISPLAY_REPORT
+    R_PEGAWAI --> DISPLAY_REPORT
+    R_UNIT --> DISPLAY_REPORT
+    R_KEGIATAN --> DISPLAY_REPORT
+    R_TUJUAN --> DISPLAY_REPORT
+    R_STATUS --> DISPLAY_REPORT
+    R_ANGGARAN --> DISPLAY_REPORT
+    R_AKTIF --> DISPLAY_REPORT
+
+    subgraph DISPLAY_REPORT ["Display Report"]
+        direction TB
+        DR_FORM["Tampilkan form filter<br/>(GET parameters)"]
+        DR_FORM --> DR_QUERY["Execute SQL query<br/>(dynamic WHERE clause)"]
+        DR_QUERY --> DR_TABLE["Tampilkan tabel data<br/>(styled with CSS)"]
+        DR_TABLE --> DR_CHART["R_ANGGARAN:<br/>Progress bar<br/>pct = realisasi / pagu × 100<br/>>90% merah<br/>>70% kuning<br/>lainnya hijau"]
+        DR_CHART --> DR_BTN["Tombol:<br/>'Cetak Laporan'<br/>→ window.print()"]
+    end
+
+    DR_BTN --> CETAK_ENTRY{"Cetak<br/>Dokumen?"}
+    CETAK_ENTRY -->|Ya| PILIH_CETAK{"Pilih<br/>Jenis Cetak?"}
+
+    PILIH_CETAK -->|"Cetak SPPD"| C_SPPD["cetak_sppd.php?id=X<br/>Query: SPPD + Pegawai<br/>+ Jabatan + Tujuan<br/>+ Dasar Hukum<br/>(format surat resmi)"]
+    PILIH_CETAK -->|"Cetak Surat Tugas"| C_ST["cetak_surat_tugas.php?id=X<br/>Query: SPPD + Pegawai<br/>+ Jabatan<br/>(format ST, ganti<br/>SPPD → ST)"]
+    PILIH_CETAK -->|"Cetak Rincian Biaya"| C_BIAYA["cetak_biaya.php?id=X<br/>Query: SPPD + Biaya<br/>+ Komponen Biaya<br/>+ terbilang() function<br/>(angka → kata)"]
+    PILIH_CETAK -->|"Cetak Data Pegawai"| C_PEGAWAI["cetak_pegawai.php<br/>(admin only)<br/>Filter: Unit, Status<br/>Query: tb_pegawai<br/>+ tb_jabatan"]
+
+    C_SPPD --> PRINT_DOC
+    C_ST --> PRINT_DOC
+    C_BIAYA --> PRINT_DOC
+    C_PEGAWAI --> PRINT_DOC
+
+    subgraph PRINT_DOC ["Print Document"]
+        direction TB
+        PD_LAYOUT["Layout:<br/>- KOP (kop surat)<br/>- Nomor surat<br/>- Isi surat<br/>- Tanda tangan<br/>- Stempel"]
+        PD_LAYOUT --> PD_CSS["@media print {<br/>.sidebar, .topbar<br/>{ display: none }<br/>.main { margin: 0 }<br/>}"]
+        PD_CSS --> PD_PRINT["window.print()<br/>→ Browser print dialog<br/>→ PDF / Physical copy"]
+    end
+
+    style LAP_ENTRY fill:#e67e22,color:#fff
+    style CEK_AKSES_LAP fill:#f59e0b,color:#fff
+    style DENY_LAP fill:#ef4444,color:#fff
+    style PILIH_LAP fill:#f59e0b,color:#fff
+    style CETAK_ENTRY fill:#f59e0b,color:#fff
+    style PILIH_CETAK fill:#f59e0b,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="section">
+  <div class="card" style="text-align:center; padding:16px;">
+    <a href="flowmap.html" style="color:var(--accent);text-decoration:none;font-size:14px;">Lihat Flowmap (versi ringkas) &rarr;</a>
+    <span style="color:var(--muted);margin:0 12px">|</span>
+    <a href="erd.html" style="color:var(--accent);text-decoration:none;font-size:14px;">Lihat ERD &rarr;</a>
+    <span style="color:var(--muted);margin:0 12px">|</span>
+    <a href="index.php" style="color:var(--accent);text-decoration:none;font-size:14px;">Kembali ke Aplikasi &rarr;</a>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+      curve: 'basis',
+      padding: 16,
+      nodeSpacing: 30,
+      rankSpacing: 50
+    },
+    themeVariables: {
+      primaryColor: '#3b82f6',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#2563eb',
+      lineColor: '#64748b',
+      secondaryColor: '#8b5cf6',
+      tertiaryColor: '#1e293b',
+      fontFamily: 'Segoe UI, system-ui, sans-serif',
+      fontSize: '13px'
+    }
+  });
+</script>
+</body>
+</html>

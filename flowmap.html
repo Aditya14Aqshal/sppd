@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Flowmap — SPPD Bakesbangpol</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body { margin: 0; padding: 20px; background: #1e1e2e; font-family: sans-serif; }
+  .mermaid { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,.3); max-width: 1400px; margin: 0 auto 20px; overflow-x: auto; }
+  h1 { color: #fff; text-align: center; margin: 0 0 6px 0; font-size: 22px; }
+  .subtitle { color: rgba(255,255,255,.5); text-align: center; margin: 0 0 24px 0; font-size: 13px; }
+  h2 { color: var(--h2-color,#fff); margin: 0 0 10px 0; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  h2 .badge { font-size: 11px; background: var(--accent,#e8a838); color: #fff; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
+  .flow-section { max-width: 1400px; margin: 0 auto 24px; }
+  .flow-section .mermaid { min-height: 200px; }
+</style>
+</head>
+<body>
+
+<h1>Flowmap Aplikasi SPPD Bakesbangpol</h1>
+<p class="subtitle">Badan Kesatuan Bangsa dan Politik — Kota Kuala Kapuas</p>
+
+<!-- 1. SITEMAP NAVIGASI -->
+<div class="flow-section">
+<h2>1. Sitemap Navigasi <span class="badge">role-based</span></h2>
+<div class="mermaid">
+flowchart TB
+  A(["<b>index.php</b><br/>Redirect"]) --> B{"Session?"}
+  B -->|"Ya"| C["<b>Dashboard</b><br/>pages/dashboard/"]
+  B -->|"Tidak"| D["<b>Login</b><br/>pages/auth/login.php"]
+
+  C --> E["<b>Sidebar Menu</b><br/>(role-based)"]
+
+  subgraph PEGAWAI [Role: Pegawai]
+    direction LR
+    P1["Ajukan SPPD<br/>ajukan.php"]
+    P2["Daftar SPPD<br/>(milik sendiri)<br/>daftar.php"]
+  end
+
+  subgraph ADMIN [Role: Admin]
+    direction LR
+    A1["Ajukan SPPD<br/>ajukan.php"]
+    A2["Daftar SPPD<br/>daftar.php"]
+    A3["Master Data"]
+    A4["Laporan & Cetak"]
+  end
+
+  subgraph PIMPINAN [Role: Pimpinan]
+    direction LR
+    I1["Persetujuan SPPD<br/>approval.php"]
+    I2["Daftar SPPD<br/>daftar.php"]
+    I3["Laporan & Cetak"]
+  end
+
+  subgraph MASTER [Master Data - Admin Only]
+    M1["Pegawai<br/>pegawai.php"]
+    M2["Jabatan<br/>jabatan.php"]
+    M3["Tujuan<br/>tujuan.php"]
+    M4["Kegiatan<br/>kegiatan.php"]
+    M5["Anggaran<br/>anggaran.php"]
+    M6["Komponen Biaya<br/>komponen_biaya.php"]
+    M7["Pengguna<br/>pengguna.php"]
+    M8["Unit Kerja<br/>unit_kerja.php"]
+    M9["Dasar Hukum<br/>dasar_hukum.php"]
+  end
+
+  A3 --> MASTER
+
+  subgraph LAPORAN [Laporan & Cetak]
+    L1["Rekap SPPD<br/>rekap_sppd.php"]
+    L2["Rekap per Bulan<br/>rekap_bulan.php"]
+    L3["Rekap per Pegawai<br/>rekap_pegawai.php"]
+    L4["Rekap per Unit<br/>rekap_unit.php"]
+    L5["Rekap per Kegiatan<br/>rekap_kegiatan.php"]
+    L6["Rekap per Tujuan<br/>rekap_tujuan.php"]
+    L7["Status SPPD<br/>rekap_status.php"]
+    L8["Rekap Anggaran<br/>rekap_anggaran.php"]
+    L9["Pegawai Teraktif<br/>rekap_pegawai_aktif.php"]
+    L10["Cetak SPPD<br/>cetak_sppd.php"]
+    L11["Cetak Surat Tugas<br/>cetak_surat_tugas.php"]
+    L12["Cetak Biaya<br/>cetak_biaya.php"]
+    L13["Cetak Pegawai<br/>cetak_pegawai.php"]
+  end
+
+  A4 --> LAPORAN
+  I3 --> LAPORAN
+
+  E --> PEGAWAI
+  E --> ADMIN
+  E --> PIMPINAN
+
+  style A fill:#e74c3c,color:#fff,stroke:#c0392b
+  style B fill:#f39c12,color:#fff,stroke:#d68910
+  style C fill:#2980b9,color:#fff,stroke:#1f6da0
+  style D fill:#7f8c8d,color:#fff,stroke:#6c7a7d
+  style PEGAWAI fill:#d5f5e3,stroke:#27ae60
+  style ADMIN fill:#d6eaf8,stroke:#2980b9
+  style PIMPINAN fill:#fdebd0,stroke:#e67e22
+  style MASTER fill:#f0f3f4,stroke:#7f8c8d
+  style LAPORAN fill:#f0f3f4,stroke:#7f8c8d
+</div>
+</div>
+
+<!-- 2. SPPD LIFECYCLE -->
+<div class="flow-section">
+<h2>2. Siklus Hidup SPPD <span class="badge">alur status</span></h2>
+<div class="mermaid">
+flowchart LR
+  START(["<b>START</b>"])
+  START --> DRAF
+
+  subgraph SUBMIT [Pengajuan]
+    DRAF["<b>Draf</b><br/>(belum diajukan)"]
+    DRAF -->|"Pegawai<br/>klik Ajukan"| DIAJUKAN
+  end
+
+  subgraph VERIF [Verifikasi Admin]
+    DIAJUKAN["<b>Diajukan</b>"]
+    DIAJUKAN -->|"Admin<br/>Verifikasi"| DIVERIFIKASI["<b>Diverifikasi</b>"]
+  end
+
+  subgraph APPROV [Persetujuan Pimpinan]
+    DIVERIFIKASI -->|"Pimpinan<br/>Setujui"| DISETUJUI["<b>Disetujui</b>"]
+    DIVERIFIKASI -->|"Pimpinan<br/>Tolak"| DITOLAK["<b>Ditolak</b>"]
+  end
+
+  subgraph TERBIT [Penerbitan Nomor]
+    DISETUJUI -->|"Admin<br/>Terbitkan No. SPPD"| DISETUJUI_NOMOR["<b>Disetujui</b><br/>+ No. SPPD"]
+  end
+
+  subgraph LAPOR [Pelaporan]
+    DISETUJUI_NOMOR -->|"Pegawai<br/>Isi Laporan"| SELESAI["<b>Selesai</b>"]
+    DISETUJUI -->|"Pegawai<br/>Isi Laporan"| SELESAI
+  end
+
+  LANG["<i>Cetak SPPD,<br/>Surat Tugas,<br/>Rincian Biaya</i>"]
+  DISETUJUI_NOMOR --> LANG
+  DISETUJUI --> LANG
+
+  style START fill:#2ecc71,color:#fff
+  style DRAF fill:#95a5a6,color:#fff
+  style DIAJUKAN fill:#3498db,color:#fff
+  style DIVERIFIKASI fill:#f39c12,color:#fff
+  style DITOLAK fill:#e74c3c,color:#fff
+  style DISETUJUI fill:#2ecc71,color:#fff
+  style DISETUJUI_NOMOR fill:#2ecc71,color:#fff
+  style SELESAI fill:#1abc9c,color:#fff
+  style LANG fill:#ecf0f1,color:#2c3e50,stroke:#bdc3c7
+</div>
+</div>
+
+<!-- 3. ALUR LOGIN -->
+<div class="flow-section">
+<h2>3. Alur Autentikasi <span class="badge">login / logout</span></h2>
+<div class="mermaid">
+flowchart TD
+  START(["<b>index.php</b>"]) --> CEK_SESI{Session<br/>user_id?}
+  CEK_SESI -->|"Ada"| DASHBOARD["<b>Dashboard</b><br/>pages/dashboard/"]
+  CEK_SESI -->|"Tidak ada"| FORM_LOGIN["<b>Form Login</b><br/>pages/auth/login.php"]
+
+  FORM_LOGIN --> SUBMIT{Submit<br/>POST?}
+  SUBMIT -->|"Tidak"| FORM_LOGIN
+  SUBMIT -->|"Ya"| QUERY_DB["Query tb_pengguna<br/>JOIN tb_pegawai<br/>WHERE username = ?"]
+
+  QUERY_DB --> VERIF{Verifikasi:<br/>aktif?<br/>password_verify?}
+  VERIF -->|"Gagal"| ERROR["Tampilkan error<br/>'Username/password salah'"]
+  ERROR --> FORM_LOGIN
+  VERIF -->|"Berhasil"| SET_SESI["Set Session:<br/>user_id, role, nama"]
+
+  SET_SESI --> REDIR_DASH["Redirect →<br/>Dashboard"]
+
+  DASHBOARD --> LOGOUT["Logout<br/>session_destroy()"]
+  LOGOUT --> REDIR_LOGIN["Redirect →<br/>Login"]
+
+  style START fill:#2c3e50,color:#fff
+  style CEK_SESI fill:#f39c12,color:#fff
+  style DASHBOARD fill:#2980b9,color:#fff
+  style FORM_LOGIN fill:#7f8c8d,color:#fff
+  style QUERY_DB fill:#34495e,color:#fff
+  style VERIF fill:#e74c3c,color:#fff
+  style ERROR fill:#e74c3c,color:#fff
+  style SET_SESI fill:#27ae60,color:#fff
+  style REDIR_DASH fill:#2980b9,color:#fff
+  style LOGOUT fill:#c0392b,color:#fff
+  style REDIR_LOGIN fill:#7f8c8d,color:#fff
+</div>
+</div>
+
+<!-- 4. ALUR PENGAJUAN SPPD -->
+<div class="flow-section">
+<h2>4. Alur Pengajuan SPPD <span class="badge">ajukan.php</span></h2>
+<div class="mermaid">
+flowchart TD
+  AKSES["<b>Ajukan SPPD</b><br/>pages/sppd/ajukan.php"] --> LOAD["Load data pegawai<br/>dari session user_id"]
+
+  LOAD --> FORM["<b>Form 4 Step:</b><br/>
+  1. Data Pengaju (auto-fill)<br/>
+  2. Detail Perjalanan<br/>
+  3. Sumber Anggaran<br/>
+  4. Konfirmasi"]
+
+  FORM --> VALIDASI{Validasi:<br/>- Field wajib lengkap?<br/>- Tgl kembali >= berangkat?}
+  VALIDASI -->|"Gagal"| ERROR_FORM["Tampilkan error"]
+  ERROR_FORM --> FORM
+  VALIDASI -->|"OK"| INSERT["INSERT tb_sppd"]
+
+  INSERT --> PILIH{submit_type?}
+
+  PILIH -->|"draf"| REDIR_DRAF["Redirect →<br/>detail.php?msg=draf<br/>(Status: Draf)"]
+
+  PILIH -->|"ajukan"| REDIR_AJU["Redirect →<br/>detail.php?msg=diajukan<br/>(Status: Diajukan)"]
+
+  style AKSES fill:#3498db,color:#fff
+  style FORM fill:#ecf0f1,color:#2c3e50
+  style VALIDASI fill:#f39c12,color:#fff
+  style INSERT fill:#2ecc71,color:#fff
+  style REDIR_DRAF fill:#95a5a6,color:#fff
+  style REDIR_AJU fill:#3498db,color:#fff
+</div>
+</div>
+
+<!-- 5. ALUR DETAIL & APPROVAL -->
+<div class="flow-section">
+<h2>5. Alur Detail & Tindakan <span class="badge">detail.php + approval.php</span></h2>
+<div class="mermaid">
+flowchart TD
+  DETAIL["<b>Detail SPPD</b><br/>detail.php?id=X"] --> TAMPIL["Tampilkan:<br/>- Info pengaju<br/>- Detail perjalanan<br/>- Anggota rombongan<br/>- Status & timeline"]
+
+  DETAIL --> CEK_ROLE{"Role?"}
+
+  CEK_ROLE -->|"Admin"| ADMIN_ACTIONS{"Status SPPD?"}
+
+  ADMIN_ACTIONS -->|"diajukan"| VERIF["Verifikasi →<br/>UPDATE status='diverifikasi'"]
+  ADMIN_ACTIONS -->|"disetujui<br/>& no_sppd kosong"| TERBIT["Terbitkan No. SPPD<br/>(manual/otomatis)"]
+  ADMIN_ACTIONS -->|"lainnya"| NO_ADMIN_ACT["Tidak ada tindakan"]
+
+  CEK_ROLE -->|"Pimpinan"| PIMP_ACTIONS{"Status =<br/>diverifikasi?"}
+
+  PIMP_ACTIONS -->|"Ya"| SETUJU["Setujui →<br/>status='disetujui'"]
+  PIMP_ACTIONS -->|"Ya"| TOLAK["Tolak →<br/>status='ditolak'<br/>+ catatan_tolak"]
+  PIMP_ACTIONS -->|"Tidak"| NO_PIMP_ACT["Hanya lihat detail"]
+
+  PIMP_ACTIONS2{"Bulk Approval?"}
+  DETAIL --> CEK_ROLE2{"Role = pimpinan?"}
+  CEK_ROLE2 -->|"Ya"| PIMP_ACTIONS2
+  PIMP_ACTIONS2 -->|"Ya"| APPROVAL["<b>Approval Page</b><br/>approval.php<br/>Bulk approve/reject"]
+
+  DETAIL --> KELOLA_LINK["Link: Kelola SPPD<br/>kelola.php?id=X<br/>(Anggota, Laporan, Biaya)"]
+
+  style DETAIL fill:#2980b9,color:#fff
+  style CEK_ROLE fill:#f39c12,color:#fff
+  style APPROVAL fill:#e67e22,color:#fff
+  style SETUJU fill:#27ae60,color:#fff
+  style TOLAK fill:#e74c3c,color:#fff
+  style VERIF fill:#f39c12,color:#fff
+  style TERBIT fill:#2ecc71,color:#fff
+</div>
+</div>
+
+<!-- 6. ALUR KELOLA SPPD -->
+<div class="flow-section">
+<h2>6. Alur Kelola SPPD <span class="badge">kelola.php (tab)</span></h2>
+<div class="mermaid">
+flowchart LR
+  KELOLA["<b>Kelola SPPD</b><br/>kelola.php?id=X"] --> TAB{"Tab?"}
+
+  TAB -->|"anggota<br/>(default)"| ANGGOTA
+  TAB -->|"laporan"| LAPORAN
+  TAB -->|"biaya"| BIAYA
+
+  subgraph ANGGOTA [Tab: Anggota Rombongan]
+    A1["Form Tambah<br/>Pilih pegawai + peran"] --> A2["INSERT tb_sppd_anggota"]
+    A2 --> A3["Tampilkan daftar<br/>anggota + Hapus"]
+  end
+
+  subgraph LAPORAN [Tab: Laporan Hasil Dinas]
+    L1["Form Laporan:<br/>- Tgl aktual<br/>- Uraian kegiatan<br/>- Upload bukti<br/>- Kesimpulan"] --> L2{"INSERT or UPDATE<br/>tb_laporan_dinas?"}
+    L2 --> L3["UPDATE status<br/>sppd = 'selesai'"]
+  end
+
+  subgraph BIAYA [Tab: Rincian Biaya]
+    B1["Form Tambah Biaya:<br/>- Komponen biaya<br/>- Jumlah hari<br/>- Besaran realisasi<br/>- Upload kwitansi"] --> B2["INSERT tb_biaya_perjalanan"]
+    B2 --> B3["Tampilkan tabel<br/>rincian + total + cetak"]
+  end
+
+  style KELOLA fill:#8e44ad,color:#fff
+  style ANGGOTA fill:#d5f5e3,stroke:#27ae60
+  style LAPORAN fill:#fdebd0,stroke:#e67e22
+  style BIAYA fill:#d6eaf8,stroke:#2980b9
+</div>
+</div>
+
+<!-- 7. ALUR MASTER DATA -->
+<div class="flow-section">
+<h2>7. Alur Master Data <span class="badge">CRUD admin</span></h2>
+<div class="mermaid">
+flowchart TD
+  MASTER["<b>Master Data</b><br/>(akses: admin)"] --> PILIH{Menu}
+
+  PILIH --> PEGAWAI
+  PILIH --> JABATAN
+  PILIH --> TUJUAN
+  PILIH --> KEGIATAN
+  PILIH --> ANGGARAN
+  PILIH --> KOMPONEN
+  PILIH --> PENGGUNA
+  PILIH --> UNIT
+  PILIH --> DASAR
+
+  subgraph CRUD [Pola CRUD Umum]
+    LIST["Tampilkan tabel data"] --> FORM["Form Tambah / Edit"]
+    FORM --> SAVE["INSERT / UPDATE"]
+    LIST --> DELETE["DELETE (cek dependensi)"]
+    SAVE --> LIST
+    DELETE --> LIST
+  end
+
+  PEGAWAI["Pegawai"] --> CRUD
+  JABATAN["Jabatan"] --> CRUD
+  TUJUAN["Tujuan"] --> CRUD
+  KEGIATAN["Kegiatan"] --> CRUD
+  ANGGARAN["Anggaran"] --> CRUD
+  KOMPONEN["Komponen Biaya"] --> CRUD
+  PENGGUNA["Pengguna<br/>(+ reset password)"] --> CRUD
+  UNIT["Unit Kerja"] --> CRUD
+  DASAR["Dasar Hukum"] --> CRUD
+
+  style MASTER fill:#2980b9,color:#fff
+  style CRUD fill:#ecf0f1,color:#2c3e50,stroke:#95a5a6
+</div>
+</div>
+
+<!-- 8. ALUR LAPORAN & CETAK -->
+<div class="flow-section">
+<h2>8. Alur Laporan & Cetak <span class="badge">rekap + print</span></h2>
+<div class="mermaid">
+flowchart LR
+  LAP["<b>Laporan & Cetak</b>"] --> FILTER{Pilih filter}
+  FILTER -->|"Bulan / Tahun / Status"| REKAP_SPPD["Rekap SPPD<br/>rekap_sppd.php"]
+  FILTER -->|"Bulan / Tahun"| REKAP_BLN["Rekap per Bulan<br/>rekap_bulan.php"]
+  FILTER -->|"Pegawai"| REKAP_PEG["Rekap per Pegawai<br/>rekap_pegawai.php"]
+  FILTER -->|"Unit Kerja"| REKAP_UNIT["Rekap per Unit<br/>rekap_unit.php"]
+  FILTER -->|"Kegiatan"| REKAP_KGT["Rekap per Kegiatan<br/>rekap_kegiatan.php"]
+  FILTER -->|"Tujuan"| REKAP_TUJUAN["Rekap per Tujuan<br/>rekap_tujuan.php"]
+  FILTER -->|"Status"| REKAP_STS["Status SPPD<br/>rekap_status.php"]
+  FILTER -->|"Anggaran"| REKAP_ANG["Rekap Anggaran<br/>rekap_anggaran.php"]
+  FILTER -->|"Aktivitas"| REKAP_AKTIF["Pegawai Teraktif<br/>rekap_pegawai_aktif.php"]
+
+  CETAK_LINK["Cetak dari detail/tabel"] --> CETAK
+
+  subgraph CETAK [Cetak Dokumen - target=_blank]
+    C1["Cetak SPPD<br/>cetak_sppd.php?id=X<br/>(format surat resmi)"]
+    C2["Cetak Surat Tugas<br/>cetak_surat_tugas.php?id=X"]
+    C3["Cetak Rincian Biaya<br/>cetak_biaya.php?id=X<br/>(+terbilang)"]
+    C4["Cetak Data Pegawai<br/>cetak_pegawai.php<br/>(filter unit/status)"]
+  end
+
+  style LAP fill:#e67e22,color:#fff
+  style FILTER fill:#f39c12,color:#fff
+  style CETAK fill:#2ecc71,color:#fff
+</div>
+</div>
+
+<!-- LEGENDA -->
+<div class="flow-section">
+<div class="mermaid" style="font-size:12px">
+flowchart LR
+  S1(["Start / Entry"]) --> P1{"Decision<br/>(percabangan)"}
+  P1 --> P2["Process / Page"]
+  P1 --> P3["<b>Database Query</b>"]
+  P1 --> P4(("Connector"))
+
+  style S1 fill:#2c3e50,color:#fff
+  style P1 fill:#f39c12,color:#fff
+  style P2 fill:#2980b9,color:#fff
+  style P3 fill:#34495e,color:#fff
+  style P4 fill:#8e44ad,color:#fff
+</div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis' } });
+</script>
+</body>
+</html>

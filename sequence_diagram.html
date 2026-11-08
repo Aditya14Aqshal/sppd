@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence Diagram — Sistem SPPD</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #1b4f8a 0%, #0d3b6e 100%);
+            color: white;
+            padding: 24px 40px;
+            text-align: center;
+        }
+        .header h1 { font-size: 22px; margin-bottom: 4px; }
+        .header p { font-size: 13px; opacity: 0.7; }
+        .container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+        .diagram-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .diagram-title {
+            padding: 16px 24px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1b4f8a;
+        }
+        .diagram-body {
+            padding: 24px;
+            overflow-x: auto;
+        }
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #1b4f8a;
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Sequence Diagram — Sistem Informasi SPPD Bakesbangpol</h1>
+    <p>Diagram Alur Proses Perjalanan Dinas</p>
+</div>
+
+<div class="container">
+
+    <div class="info-box">
+        Diagram ini menjelaskan alur interaksi antar komponen dalam sistem SPPD mulai dari login, pengajuan, verifikasi, persetujuan, hingga pencetakan.
+    </div>
+
+    <!-- 1. Login -->
+    <div class="diagram-section">
+        <div class="diagram-title">1. Proses Login</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as Pegawai / Admin / Pimpinan
+    participant Browser as Browser
+    participant Login as login.php
+    participant DB as Database
+
+    User->>Browser: Buka aplikasi SPPD
+    Browser->>Login: GET /pages/auth/login.php
+    Login-->>Browser: Tampilkan form login
+
+    User->>Browser: Masukkan username & password
+    Browser->>Login: POST (username, password)
+
+    Login->>DB: SELECT tb_pengguna + tb_pegawai WHERE username = ?
+    DB-->>Login: Hasil query (id, password, role, status, nama)
+
+    alt Username ditemukan & status aktif & password valid
+        Login->>Browser: Set session (user_id, role, nama)
+        Login->>Browser: Redirect ke /pages/dashboard/
+        Browser->>Dashboard: Load dashboard
+        Dashboard-->>Browser: Tampilkan statistik & SPPD terbaru
+    else Gagal
+        Login->>Browser: Tampilkan error "Username atau password salah"
+        Browser-->>User: Pesan error ditampilkan
+    end
+            </pre>
+        </div>
+    </div>
+
+    <!-- 2. Pengajuan SPPD -->
+    <div class="diagram-section">
+        <div class="diagram-title">2. Pengajuan SPPD (Oleh Pegawai)</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Pegawai as Pegawai
+    participant Browser as Browser
+    participant Ajukan as ajukan.php
+    participant DB as Database
+
+    Pegawai->>Browser: Klik "Ajukan SPPD"
+    Browser->>Ajukan: GET /pages/sppd/ajukan.php
+    Ajukan->>DB: SELECT data pegawai, jabatan, tujuan, kegiatan, anggaran, komponen biaya
+    DB-->>Ajukan: Data pendukung form
+    Ajukan-->>Browser: Tampilkan form pengajuan (4 langkah)
+
+    Pegawai->>Browser: Isi form: kegiatan, tujuan, tanggal, anggaran
+    Pegawai->>Browser: Klik "Ajukan SPPD"
+
+    alt Validasi form berhasil
+        Browser->>Ajukan: POST (id_kegiatan, id_tujuan, id_anggaran, keperluan, tgl_berangkat, tgl_kembali, kendaraan, submit_type)
+
+        alt submit_type = "ajukan"
+            Ajukan->>DB: INSERT INTO tb_sppd (status = 'diajukan')
+            DB-->>Ajukan: id_sppd baru
+            Ajukan->>Browser: Redirect ke detail.php?msg=diajukan
+        else submit_type = "draf"
+            Ajukan->>DB: INSERT INTO tb_sppd (status = 'draf')
+            DB-->>Ajukan: id_sppd baru
+            Ajukan->>Browser: Redirect ke detail.php?msg=draf
+        end
+
+        Browser-->>Pegawai: Tampilkan detail SPPD dengan status
+    else Validasi gagal
+        Ajukan->>Browser: Tampilkan error
+        Browser-->>Pegawai: Pesan error ditampilkan
+    end
+            </pre>
+        </div>
+    </div>
+
+    <!-- 3. Verifikasi Admin -->
+    <div class="diagram-section">
+        <div class="diagram-title">3. Verifikasi oleh Admin</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Admin as Admin
+    participant Browser as Browser
+    participant Detail as detail.php
+    participant DB as Database
+
+    Admin->>Browser: Buka Daftar SPPD
+    Browser->>Detail: GET /pages/sppd/daftar.php
+    Detail->>DB: SELECT tb_sppd (status = 'diajukan')
+    DB-->>Detail: Daftar SPPD menunggu verifikasi
+    Detail-->>Browser: Tampilkan daftar SPPD
+
+    Admin->>Browser: Klik "Detail" pada SPPD
+    Browser->>Detail: GET /pages/sppd/detail.php?id=X
+    Detail->>DB: SELECT data lengkap SPPD
+    Detail-->>Browser: Tampilkan detail SPPD
+
+    Admin->>Browser: Klik "Verifikasi & Teruskan ke Pimpinan"
+    Browser->>Detail: POST (action=verifikasi)
+    Detail->>DB: UPDATE tb_sppd SET status='diverifikasi' WHERE id_sppd=X
+    DB-->>Detail: Berhasil diupdate
+    Detail->>Browser: Redirect ke detail.php
+    Browser-->>Admin: Status berubah menjadi "Diverifikasi"
+            </pre>
+        </div>
+    </div>
+
+    <!-- 4. Persetujuan Pimpinan -->
+    <div class="diagram-section">
+        <div class="diagram-title">4. Persetujuan oleh Pimpinan</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Pimpinan as Pimpinan
+    participant Browser as Browser
+    participant Approval as approval.php / detail.php
+    participant DB as Database
+
+    Pimpinan->>Browser: Buka Halaman Persetujuan
+    Browser->>Approval: GET /pages/sppd/approval.php
+    Approval->>DB: SELECT tb_sppd WHERE status = 'diverifikasi'
+    DB-->>Approval: Daftar SPPD menunggu keputusan
+    Approval-->>Browser: Tampilkan daftar SPPD
+
+    alt Setujui SPPD
+        Pimpinan->>Browser: Klik "Setujui"
+        Browser->>Approval: POST (id_sppd, keputusan=setuju)
+        Approval->>DB: UPDATE tb_sppd SET status='disetujui', id_pimpinan=?, tgl_persetujuan=NOW()
+        DB-->>Approval: Berhasil diupdate
+        Approval->>Browser: Redirect / tampilkan pesan sukses
+        Browser-->>Pimpinan: Status berubah menjadi "Disetujui"
+    else Tolak SPPD
+        Pimpinan->>Browser: Klik "Tolak" → Isi alasan penolakan
+        Browser->>Approval: POST (id_sppd, keputusan=tolak, catatan_tolak=...)
+        Approval->>DB: UPDATE tb_sppd SET status='ditolak', catatan_tolak=?
+        DB-->>Approval: Berhasil diupdate
+        Approval->>Browser: Redirect / tampilkan pesan sukses
+        Browser-->>Pimpinan: Status berubah menjadi "Ditolak"
+    end
+            </pre>
+        </div>
+    </div>
+
+    <!-- 5. Kelola SPPD (Anggota, Laporan, Biaya) -->
+    <div class="diagram-section">
+        <div class="diagram-title">5. Kelola SPPD — Anggota, Laporan, & Biaya</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor User as Pegawai / Admin
+    participant Browser as Browser
+    participant Kelola as kelola.php
+    participant DB as Database
+
+    User->>Browser: Buka Kelola SPPD
+    Browser->>Kelola: GET /pages/sppd/kelola.php?id=X
+    Kelola->>DB: SELECT data SPPD, anggota, laporan, biaya
+    DB-->>Kelola: Data lengkap
+    Kelola-->>Browser: Tampilkan tab (Anggota / Laporan / Biaya)
+
+    note over User, DB: Tab 1 — Tambah Anggota Rombongan
+    User->>Browser: Pilih pegawai & peran, klik "Tambah Anggota"
+    Browser->>Kelola: POST (action=tambah_anggota, id_pegawai, peran)
+    Kelola->>DB: INSERT INTO tb_sppd_anggota
+    DB-->>Kelola: Berhasil
+    Kelola->>Browser: Refresh halaman
+    Browser-->>User: Anggota ditambahkan
+
+    note over User, DB: Tab 2 — Simpan Laporan Hasil Dinas
+    User->>Browser: Isi form laporan + upload bukti
+    Browser->>Kelola: POST (action=simpan_laporan, tgl_aktual, uraian, kesimpulan, bukti_file)
+    Kelola->>DB: INSERT/UPDATE tb_laporan_dinas
+    Kelola->>DB: UPDATE tb_sppd SET status='selesai'
+    DB-->>Kelola: Berhasil
+    Kelola-->>User: Laporan tersimpan, status = Selesai
+
+    note over User, DB: Tab 3 — Tambah Biaya Realisasi
+    User->>Browser: Pilih komponen biaya, isi jumlah hari & besaran, upload kwitansi
+    Browser->>Kelola: POST (action=simpan_biaya, id_komponen, jumlah_hari, besaran, kwitansi)
+    Kelola->>DB: INSERT INTO tb_biaya_perjalanan
+    DB-->>Kelola: Berhasil
+    Kelola-->>User: Biaya ditambahkan
+            </pre>
+        </div>
+    </div>
+
+    <!-- 6. Cetak SPPD -->
+    <div class="diagram-section">
+        <div class="diagram-title">6. Cetak Surat SPPD</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Admin as Admin
+    participant Browser as Browser
+    participant Cetak as cetak_sppd.php
+    participant DB as Database
+
+    Admin->>Browser: Buka Detail SPPD (status = disetujui)
+    Browser->>Cetak: GET /pages/laporan/cetak_sppd.php?id=X
+    Cetak->>DB: SELECT data lengkap SPPD (pegawai, jabatan, tujuan, anggaran, pimpinan)
+    DB-->>Cetak: Data surat
+    Cetak->>Cetak: Generate format surat SPPD
+    Cetak-->>Browser: Tampilkan / generate PDF surat SPPD
+    Browser-->>Admin: Cetak surat SPPD
+            </pre>
+        </div>
+    </div>
+
+    <!-- 7. Status Flow -->
+    <div class="diagram-section">
+        <div class="diagram-title">7. Alur Status SPPD (State Diagram)</div>
+        <div class="diagram-body">
+            <pre class="mermaid">
+stateDiagram-v2
+    [*] --> Draf: Simpan Draf
+    [*] --> Diajukan: Ajukan SPPD
+
+    Draf --> Diajukan: Ajukan
+    Diajukan --> Diverifikasi: Admin Verifikasi
+    Diverifikasi --> Disetujui: Pimpinan Setujui
+    Diverifikasi --> Ditolak: Pimpinan Tolak
+    Disetujui --> Selesai: Laporan Disimpan
+
+    Ditolak --> [*]
+    Selesai --> [*]
+            </pre>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+            primaryColor: '#e8f4fd',
+            primaryTextColor: '#1b4f8a',
+            primaryBorderColor: '#1b4f8a',
+            lineColor: '#1b4f8a',
+            secondaryColor: '#f8f9fa',
+            tertiaryColor: '#ffffff',
+            noteBkgColor: '#fff3cd',
+            noteTextColor: '#856404',
+            noteBorderColor: '#ffc107',
+            actorBkg: '#1b4f8a',
+            actorTextColor: '#ffffff',
+            actorBorder: '#1b4f8a',
+            activationBkgColor: '#e8f4fd',
+            activationBorderColor: '#1b4f8a',
+            signalColor: '#1b4f8a',
+            signalTextColor: '#333'
+        },
+        sequence: {
+            diagramMarginX: 10,
+            diagramMarginY: 10,
+            actorMargin: 50,
+            width: 180,
+            height: 50,
+            boxMargin: 10,
+            boxTextMargin: 5,
+            noteMargin: 10,
+            messageMargin: 40,
+            mirrorActors: true,
+            useMaxWidth: true,
+            wrap: true
+        }
+    });
+</script>
+
+</body>
+</html>

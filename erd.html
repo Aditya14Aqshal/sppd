@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>ERD - SPPD Bakesbangpol</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body { margin: 0; padding: 20px; background: #1e1e2e; font-family: sans-serif; }
+  .mermaid { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,.3); max-width: 1400px; margin: 0 auto; }
+  h1 { color: #fff; text-align: center; margin-bottom: 20px; font-size: 22px; }
+  .legend { background: #fff; max-width: 1400px; margin: 20px auto 0; padding: 15px 25px; border-radius: 8px; font-size: 13px; }
+  .legend h3 { margin: 0 0 8px 0; }
+  .legend table { border-collapse: collapse; width: 100%; }
+  .legend td { padding: 3px 12px; vertical-align: top; }
+  .legend .pk { color: #e74c3c; font-weight: bold; }
+  .legend .fk { color: #2980b9; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>Entity Relationship Diagram — SPPD Bakesbangpol Kuala Kapuas</h1>
+<div class="mermaid">
+erDiagram
+    tb_jabatan {
+        int id_jabatan PK
+        varchar nama_jabatan
+        varchar golongan
+        varchar pangkat
+        varchar eselon
+    }
+
+    tb_pegawai {
+        int id_pegawai PK
+        varchar nip UK
+        varchar nama_lengkap
+        int id_jabatan FK
+        varchar unit_kerja
+        enum status
+        enum jenis_kelamin
+        varchar no_hp
+        varchar email
+        enum jenis_pegawai
+    }
+
+    tb_pengguna {
+        int id_pengguna PK
+        int id_pegawai FK,UK
+        varchar username UK
+        varchar password
+        enum role
+        enum status
+    }
+
+    tb_unit_kerja {
+        int id_unit PK
+        varchar nama_unit
+        varchar kode_unit
+    }
+
+    tb_tujuan {
+        int id_tujuan PK
+        varchar nama_instansi
+        varchar kota
+        varchar provinsi
+        enum zona
+        text alamat
+    }
+
+    tb_jenis_kegiatan {
+        int id_kegiatan PK
+        varchar nama_kegiatan
+        enum status
+        text keterangan
+    }
+
+    tb_anggaran {
+        int id_anggaran PK
+        varchar kode_anggaran UK
+        varchar nama_program
+        decimal pagu
+        enum status
+        year tahun_anggaran
+    }
+
+    tb_sppd {
+        int id_sppd PK
+        int id_pengaju FK
+        int id_kegiatan FK
+        int id_tujuan FK
+        int id_anggaran FK
+        int id_pimpinan FK
+        varchar no_sppd
+        text keperluan
+        date tgl_berangkat
+        date tgl_kembali
+        varchar kendaraan
+        enum status
+        text catatan_tolak
+        datetime tgl_pengajuan
+        datetime tgl_persetujuan
+    }
+
+    tb_sppd_anggota {
+        int id_anggota PK
+        int id_sppd FK
+        int id_pegawai FK
+        varchar peran
+    }
+
+    tb_komponen_biaya {
+        int id_komponen PK
+        enum jenis_biaya
+        varchar golongan
+        enum zona
+        decimal besaran
+        year tahun_anggaran
+    }
+
+    tb_biaya_perjalanan {
+        int id_biaya PK
+        int id_sppd FK
+        int id_komponen FK
+        int jumlah_hari
+        decimal besaran_realisasi
+        varchar kwitansi_file
+    }
+
+    tb_laporan_dinas {
+        int id_laporan PK
+        int id_sppd FK,UK
+        date tgl_aktual_berangkat
+        date tgl_aktual_kembali
+        text uraian_kegiatan
+        text kesimpulan
+        varchar bukti_file
+    }
+
+    tb_dasar_hukum {
+        int id_dasar PK
+        varchar judul
+        text isi
+        year tahun
+        enum status
+        int urutan
+    }
+
+    %% ========== RELASI ==========
+
+    tb_jabatan    ||--o{ tb_pegawai     : memiliki
+    tb_pegawai    |o--|| tb_pengguna    : login
+    tb_pegawai    ||--o{ tb_sppd_anggota: ikut_serta
+    tb_pegawai    ||--o{ tb_sppd        : mengajukan
+    tb_pegawai    ||--o{ tb_sppd        : menyetujui
+
+    tb_jenis_kegiatan ||--o{ tb_sppd    : kegiatan
+    tb_tujuan         ||--o{ tb_sppd    : tujuan
+    tb_anggaran       ||--o{ tb_sppd    : anggaran
+
+    tb_sppd       ||--o{ tb_sppd_anggota: rombongan
+    tb_sppd       ||--o{ tb_biaya_perjalanan: biaya
+    tb_sppd       ||--|| tb_laporan_dinas: laporan
+
+    tb_komponen_biaya ||--o{ tb_biaya_perjalanan: standar_biaya
+
+    tb_unit_kerja |o--o{ tb_pegawai    : unit_kerja
+</div>
+
+<div class="legend">
+<h3>Keterangan</h3>
+<table>
+  <tr><td><span class="pk">PK</span></td><td>Primary Key</td></tr>
+  <tr><td><span class="fk">FK</span></td><td>Foreign Key</td></tr>
+  <tr><td>UK</td><td>Unique Key</td></tr>
+  <tr><td><code>||--||</code></td><td>One-to-One</td></tr>
+  <tr><td><code>||--o{</code></td><td>One-to-Many</td></tr>
+  <tr><td><code>|o--o{</code></td><td>Zero-or-One-to-Many (opsional)</td></tr>
+</table>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', er: { layoutDirection: 'TB' } });
+</script>
+</body>
+</html>
